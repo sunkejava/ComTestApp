@@ -60,18 +60,18 @@ namespace ComTestApp
         {
             byte[] byFont = Properties.Resources.创艺简中圆;//获取嵌入更新文件的字节数组
             string strPath = Application.StartupPath + @"\font\创艺简中圆.TTF";//设置释放路径
-            if (!Directory.Exists(Path.GetDirectoryName(strPath)))
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(strPath));
-            }
-            if (!File.Exists(strPath))
-            {
-                //创建字体文件（覆盖模式）
-                using (FileStream fs = new FileStream(strPath, FileMode.Create))
-                {
-                    fs.Write(byFont, 0, byFont.Length);
-                }
-            }
+            //if (!Directory.Exists(Path.GetDirectoryName(strPath)))
+            //{
+            //    Directory.CreateDirectory(Path.GetDirectoryName(strPath));
+            //}
+            //if (!File.Exists(strPath))
+            //{
+            //    //创建字体文件（覆盖模式）
+            //    using (FileStream fs = new FileStream(strPath, FileMode.Create))
+            //    {
+            //        fs.Write(byFont, 0, byFont.Length);
+            //    }
+            //}
             byFont = Properties.Resources.SQLite_Interop;
             strPath = Application.StartupPath + @"\SQLite.Interop.dll";
             if (!File.Exists(strPath))

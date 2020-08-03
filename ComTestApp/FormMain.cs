@@ -212,11 +212,13 @@ namespace ComTestApp
         /// <param name="e"></param>
         private void Cmb_HardList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            appConfig.hardTypeIndex = Cmb_HardList.SelectedIndex;
+            if(appConfig != null) appConfig.hardTypeIndex = Cmb_HardList.SelectedIndex;
             if (Cmb_PortList != null && Cmb_PortList.SelectedValue != null)
             {
                 hardType = Cmb_HardList.SelectedValue.ToString();
                 Text_Number.Enabled = Text_Number.ReadOnly = hardType.Equals("A1");
+                hardNum = ConstValue.GetBoxCodesDic(hardType, UserContext.ProductCounts).Count;
+                appConfig.hardNum = hardNum;
                 InitHardView();
                 LoadHardWareInfo(1);
             }
@@ -229,7 +231,7 @@ namespace ComTestApp
         /// <param name="e"></param>
         private void Cmb_PortList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            appConfig.comIndex = Cmb_PortList.SelectedIndex;
+            if (appConfig != null) appConfig.comIndex = Cmb_PortList.SelectedIndex;
             SerialPortName = Cmb_PortList.SelectedValue.ToString();            
         }
 
@@ -240,10 +242,10 @@ namespace ComTestApp
         /// <param name="e"></param>
         private void Text_Number_ValueChanged(object sender, EventArgs e)
         {
-            appConfig.hardNum = Text_Number.Value;
+            if (appConfig != null) appConfig.hardNum = Text_Number.Value;
             hardNum = (int)Text_Number.Value;
             InitHardView();
-            LoadHardWareInfo(hardNum);            
+            //LoadHardWareInfo(hardNum);            
         }
 
         /// <summary>
@@ -424,6 +426,8 @@ namespace ComTestApp
             Cmb_PortList.DataSource = list;
             if (Cmb_PortList.Items.Count > 0)
                 Cmb_PortList.SelectedIndex = 0;SerialPortName = Cmb_PortList.SelectedValue.ToString();
+            hardNum = ConstValue.GetBoxCodesDic(hardType, UserContext.ProductCounts).Count;
+            if (appConfig != null) appConfig.hardNum = hardNum;
         }
 
         /// <summary>
@@ -431,6 +435,25 @@ namespace ComTestApp
         /// </summary>
         private void LoadHardWareInfo(int boxNum)
         {
+            TabPage tp = null;
+            switch (boxNum)
+            {
+                case 1:
+                    tp = tabPage1;
+                    break;
+                case 2:
+                    tp = tabPage2;
+                    break;
+                case 3:
+                    tp = tabPage3;
+                    break;
+                case 4:
+                    tp = tabPage4;
+                    break;
+                default:
+                    break;
+            }
+            tabControl1.SelectedTab = tp;
             if (SerialPortName.IsEmpty() && Cmb_PortList.Items.Count > 0) SerialPortName = Cmb_PortList.Text;
             //设备箱体
             Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, UserContext.ProductCounts);
@@ -550,6 +573,7 @@ namespace ComTestApp
                 tabPage1.Controls.Add( GenerateControl());
             }
             UpdateMsg(string.Format("当前批次【{0}】已检测耗时{1}，共计检测端口{2}个，成功率为{3}%","xxx","xx秒","xxx","xx"));
+            tabControl1.Refresh();
         }
 
         private void clearControl()
@@ -972,7 +996,7 @@ namespace ComTestApp
                 Color defaultColor = Color.Black;
                 foreach (var boxItem in BoxDict)
                 {
-                    //LoadHardWareInfo(int.Parse(boxItem.Value) + 1);
+                    LoadHardWareInfo(int.Parse(boxItem.Value) + 1);
                     foreach (DataGridViewRow item in Grid_Data.Rows)
                     {
                         if (stop)
@@ -1032,6 +1056,7 @@ namespace ComTestApp
                 List<int> rlc = new List<int>();
                 foreach (var boxItem in BoxDict)
                 {
+                    LoadHardWareInfo(int.Parse(boxItem.Value) + 1);
                     while (rlc.Count < Grid_Data.Rows.Count)
                     {
                         if (stop)
@@ -1097,6 +1122,7 @@ namespace ComTestApp
                 List<int> rlc = new List<int>();
                 foreach (var boxItem in BoxDict)
                 {
+                    LoadHardWareInfo(int.Parse(boxItem.Value) + 1);
                     int cc = new Random().Next(5, 10);
                     while (rlc.Count < cc)
                     {

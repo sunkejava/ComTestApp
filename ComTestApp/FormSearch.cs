@@ -110,6 +110,7 @@ namespace ComTestApp
             });
             resultEntitys = ListSous.FindAll(o => o.StartTime >= DateTime.Parse(Time_Begin.Value.ToString("yyyy-MM-dd")) && o.EndTime <= DateTime.Parse(Time_End.Value.AddDays(1).ToString("yyyy-MM-dd")));
             resultEntitys = resultEntitys.OrderBy(i => i.BatchNumber).ThenBy(i => i.Num).ToList();
+            _pageNow = 1;
             LoadPageDate();
             OnPageEdit += FormSearch_OnPageEdit;
         }
