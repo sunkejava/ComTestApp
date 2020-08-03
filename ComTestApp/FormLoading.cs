@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ComTestApp.Common;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -15,6 +16,11 @@ namespace ComTestApp
         public FormLoading()
         {
             InitializeComponent();
+        }
+
+        private void FormLoading_Load(object sender, EventArgs e)
+        {
+            this.BackColor = ColorTranslator.FromHtml("#FF5DB3AB"); //171, 179, 93
         }
     }
 }

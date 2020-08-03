@@ -44,7 +44,7 @@ namespace ComTestApp
         CheckEnum.CheckModel checkModel = CheckEnum.CheckModel.Order;//检测模式
         DateTime startTime,endTime;//开始时间、结束时间
         int portCount = 0, portSuc = 0;//总端口数及成功端口数
-        bool stop = false;//是否停止
+        volatile bool stop = false;//是否停止
         //bool IsRead = false;//是否读取
         AppConfig appConfig = null;
         ComPort comport = new ComPort(3500);
@@ -338,10 +338,14 @@ namespace ComTestApp
                             break;
                     }
                     startTime = DateTime.Now;
+                    if (th != null && !th.IsAlive)
+                    {
+                        th.Abort();
+                    }
+                    stop = false;
                     //开始事件
                     th = new Thread(CheckAllInfo);
-                    th.IsBackground = true;
-                    stop = false;
+                    //th.IsBackground = true;                    
                     mre.Set();
                     th.Start();
                 }
@@ -376,7 +380,7 @@ namespace ComTestApp
                 if (th.IsAlive)
                 {
                     stop = true;
-                    mre.Set();
+                    mre.Set();                    
                     //th.Abort();
                 }
                 Btn_End.Enabled = false;
@@ -453,7 +457,7 @@ namespace ComTestApp
                 default:
                     break;
             }
-            tabControl1.SelectedTab = tp;
+            DelegateUpTab(tp);
             if (SerialPortName.IsEmpty() && Cmb_PortList.Items.Count > 0) SerialPortName = Cmb_PortList.Text;
             //设备箱体
             Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, UserContext.ProductCounts);
@@ -634,7 +638,7 @@ namespace ComTestApp
                 ExLabel lbport = new ExLabel()
                 {
                     Name = "lb_" + hardType + "_" + hardNum + "_" + (IsA1 ? colIndex.ToString() + "_" + rowIndex.ToString() : (i).ToString()),
-                    Text = "端口" + AppedNumber(IsA1 ? colIndex : rowIndex),
+                    Text = "端口" + AppedNumber(IsA1 ? colIndex : 5 * (colIndex - 1) + rowIndex),
                     Width = sizeW,
                     Height = sizeW,
                     Radius = 30,
@@ -776,7 +780,7 @@ namespace ComTestApp
                 cn.Invoke((EventHandler)delegate
                 {
                     cn.BaseColor = cl;
-                    Console.WriteLine(string.Format("修改{0}的背景色为{1}", cn.Name, cl));
+                    //Console.WriteLine(string.Format("修改{0}的背景色为{1}", cn.Name, cl));
                     //cn.BackColor = cl;
                     cn.Refresh();
                 });
@@ -784,9 +788,26 @@ namespace ComTestApp
             else
             {
                 cn.BaseColor = cl;
-                Console.WriteLine(string.Format("修改{0}的背景色为{1}",cn.Name,cl));
+                //Console.WriteLine(string.Format("修改{0}的背景色为{1}",cn.Name,cl));
                 //cn.BackColor = cl;
                 cn.Refresh();
+            }
+        }
+
+        delegate void UpdateTabSelect(TabPage tp);
+        private void DelegateUpTab(TabPage tp)
+        {
+            if (tabControl1.InvokeRequired)
+            {
+                while (!tabControl1.IsHandleCreated)
+                {
+                    if (tabControl1.IsDisposed || tabControl1.Disposing) return;
+                }
+                tabControl1.Invoke(new UpdateTabSelect(DelegateUpTab), new object[] { tp });
+            }
+            else 
+            {
+                tabControl1.SelectedTab = tp;
             }
         }
 
@@ -874,8 +895,10 @@ namespace ComTestApp
                         stop = true;
                         DelegateUpEnd(false, "结束");
                         DelegateUpStart(true, "开始");
+                        break;
                     }
                 }
+                stop = false;
             }
             catch (Exception ex)
             {

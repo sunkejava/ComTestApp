@@ -62,13 +62,22 @@
     <Compile Include="Common\CheckEnum.cs" />
     <Compile Include="Common\ComPort.cs" />
     <Compile Include="Common\ControlUiHelp.cs" />
+    <Compile Include="Common\DesktopWinAPI.cs" />
     <Compile Include="Common\ExtensionHelp.cs" />
+    <Compile Include="Common\RenderHelper.cs" />
+    <Compile Include="Common\Win32.cs" />
     <Compile Include="Entitys\AppConfig.cs" />
     <Compile Include="Entitys\CommonEnitityMappingAttribute.cs" />
     <Compile Include="Entitys\FieldOfInfo.cs" />
     <Compile Include="Entitys\PageEntity.cs" />
     <Compile Include="Entitys\UsbPortEntity.cs" />
     <Compile Include="ExControl\ButtonEx.cs" />
+    <Compile Include="ExControl\ExForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExControl\ExForm.Designer.cs">
+      <DependentUpon>ExForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ExControl\ExLabel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -98,6 +107,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ExControl\ExForm.resx">
+      <DependentUpon>ExForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormLoading.resx">
       <DependentUpon>FormLoading.cs</DependentUpon>
     </EmbeddedResource>
