@@ -396,10 +396,10 @@
             this.Lb_PageInfo.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Lb_PageInfo.Location = new System.Drawing.Point(23, 8);
             this.Lb_PageInfo.Name = "Lb_PageInfo";
-            this.Lb_PageInfo.Size = new System.Drawing.Size(172, 35);
+            this.Lb_PageInfo.Size = new System.Drawing.Size(487, 35);
             this.Lb_PageInfo.TabIndex = 0;
             this.Lb_PageInfo.Text = "共0条记录     0/0";
-            this.Lb_PageInfo.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.Lb_PageInfo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // FormSearch
             // 

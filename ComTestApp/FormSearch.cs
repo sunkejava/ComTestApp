@@ -1,4 +1,5 @@
-﻿using ComTestApp.Common;
+﻿using AllIn.Core.Util;
+using ComTestApp.Common;
 using ComTestApp.Entitys;
 using System;
 using System.Collections.Generic;
@@ -100,19 +101,26 @@ namespace ComTestApp
 
         private void Btn_Serach_Click(object sender, EventArgs e)
         {
-            OnPageEdit -= FormSearch_OnPageEdit;
-            var ListSous = ExtensionHelp.SelectEntity(new UsbPortEntity()
+            try
             {
-                HardType = Cmb_HardList.Text,
-                PortStatus = Cmb_Status.Text,
-                SerialPortName = Cmb_PortList.Text,
-                BatchNumber = Text_BrantchNumber.Text.Trim()
-            });
-            resultEntitys = ListSous.FindAll(o => o.StartTime >= DateTime.Parse(Time_Begin.Value.ToString("yyyy-MM-dd")) && o.EndTime <= DateTime.Parse(Time_End.Value.AddDays(1).ToString("yyyy-MM-dd")));
-            resultEntitys = resultEntitys.OrderBy(i => i.BatchNumber).ThenBy(i => i.Num).ToList();
-            _pageNow = 1;
-            LoadPageDate();
-            OnPageEdit += FormSearch_OnPageEdit;
+                OnPageEdit -= FormSearch_OnPageEdit;
+                var ListSous = ExtensionHelp.SelectEntity(new UsbPortEntity()
+                {
+                    HardType = Cmb_HardList.Text,
+                    PortStatus = Cmb_Status.Text,
+                    SerialPortName = Cmb_PortList.Text,
+                    BatchNumber = Text_BrantchNumber.Text.Trim()
+                });
+                resultEntitys = ListSous.FindAll(o => o.StartTime >= DateTime.Parse(Time_Begin.Value.ToString("yyyy-MM-dd")) && o.EndTime <= DateTime.Parse(Time_End.Value.AddDays(1).ToString("yyyy-MM-dd")));
+                resultEntitys = resultEntitys.OrderBy(i => i.BatchNumber).ThenBy(i => i.Num).ToList();
+                _pageNow = 1;
+                LoadPageDate();
+                OnPageEdit += FormSearch_OnPageEdit;
+            }
+            catch (Exception ex)
+            {
+                LogHelper.ToLog("数据查询异常，原以为:" + ex);
+            }
         }
 
 

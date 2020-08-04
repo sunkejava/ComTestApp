@@ -57,6 +57,7 @@
             this.Panel_Bottom = new System.Windows.Forms.Panel();
             this.Group_DriveInfo = new System.Windows.Forms.GroupBox();
             this.Grid_Data = new System.Windows.Forms.DataGridView();
+            this.Cmb_Listcod = new System.Windows.Forms.ComboBox();
             this.Panel_Top.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Num_Waiting)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Text_Number)).BeginInit();
@@ -70,6 +71,7 @@
             // 
             // Panel_Top
             // 
+            this.Panel_Top.Controls.Add(this.Cmb_Listcod);
             this.Panel_Top.Controls.Add(this.Btn_search);
             this.Panel_Top.Controls.Add(this.Num_Waiting);
             this.Panel_Top.Controls.Add(this.label6);
@@ -89,14 +91,14 @@
             this.Panel_Top.Dock = System.Windows.Forms.DockStyle.Top;
             this.Panel_Top.Location = new System.Drawing.Point(0, 0);
             this.Panel_Top.Name = "Panel_Top";
-            this.Panel_Top.Size = new System.Drawing.Size(1416, 52);
+            this.Panel_Top.Size = new System.Drawing.Size(1924, 52);
             this.Panel_Top.TabIndex = 0;
             // 
             // Btn_search
             // 
             this.Btn_search.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.Btn_search.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Btn_search.Location = new System.Drawing.Point(1328, 3);
+            this.Btn_search.Location = new System.Drawing.Point(1836, 3);
             this.Btn_search.Name = "Btn_search";
             this.Btn_search.Size = new System.Drawing.Size(80, 46);
             this.Btn_search.TabIndex = 46;
@@ -148,7 +150,7 @@
             this.Btn_End.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.Btn_End.Enabled = false;
             this.Btn_End.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Btn_End.Location = new System.Drawing.Point(1173, 3);
+            this.Btn_End.Location = new System.Drawing.Point(1681, 3);
             this.Btn_End.Name = "Btn_End";
             this.Btn_End.Size = new System.Drawing.Size(116, 46);
             this.Btn_End.TabIndex = 42;
@@ -161,7 +163,7 @@
             this.Btn_Start.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.Btn_Start.BackColor = System.Drawing.SystemColors.Control;
             this.Btn_Start.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Btn_Start.Location = new System.Drawing.Point(1017, 3);
+            this.Btn_Start.Location = new System.Drawing.Point(1525, 3);
             this.Btn_Start.Name = "Btn_Start";
             this.Btn_Start.Size = new System.Drawing.Size(116, 46);
             this.Btn_Start.TabIndex = 41;
@@ -305,7 +307,7 @@
             this.Btn_LoadComPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.Btn_LoadComPort.BackColor = System.Drawing.SystemColors.Control;
             this.Btn_LoadComPort.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Btn_LoadComPort.Location = new System.Drawing.Point(846, 3);
+            this.Btn_LoadComPort.Location = new System.Drawing.Point(1354, 3);
             this.Btn_LoadComPort.Name = "Btn_LoadComPort";
             this.Btn_LoadComPort.Size = new System.Drawing.Size(131, 46);
             this.Btn_LoadComPort.TabIndex = 45;
@@ -319,7 +321,7 @@
             this.Panel_Midel.Dock = System.Windows.Forms.DockStyle.Top;
             this.Panel_Midel.Location = new System.Drawing.Point(0, 52);
             this.Panel_Midel.Name = "Panel_Midel";
-            this.Panel_Midel.Size = new System.Drawing.Size(1416, 68);
+            this.Panel_Midel.Size = new System.Drawing.Size(1924, 68);
             this.Panel_Midel.TabIndex = 1;
             // 
             // Lb_Msg
@@ -329,7 +331,7 @@
             this.Lb_Msg.Font = new System.Drawing.Font("微软雅黑", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Lb_Msg.Location = new System.Drawing.Point(0, 0);
             this.Lb_Msg.Name = "Lb_Msg";
-            this.Lb_Msg.Size = new System.Drawing.Size(1416, 68);
+            this.Lb_Msg.Size = new System.Drawing.Size(1924, 68);
             this.Lb_Msg.TabIndex = 0;
             this.Lb_Msg.Text = "当前批次【xxxx】已检测耗时xx秒，共计检测端口xx个，成功率为x";
             this.Lb_Msg.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -340,7 +342,7 @@
             this.Panel_View.Dock = System.Windows.Forms.DockStyle.Top;
             this.Panel_View.Location = new System.Drawing.Point(0, 120);
             this.Panel_View.Name = "Panel_View";
-            this.Panel_View.Size = new System.Drawing.Size(1416, 451);
+            this.Panel_View.Size = new System.Drawing.Size(1924, 451);
             this.Panel_View.TabIndex = 2;
             // 
             // tabControl1
@@ -354,7 +356,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1416, 451);
+            this.tabControl1.Size = new System.Drawing.Size(1924, 451);
             this.tabControl1.TabIndex = 0;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
@@ -364,7 +366,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 32);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1408, 415);
+            this.tabPage1.Size = new System.Drawing.Size(1916, 415);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "设备1";
             // 
@@ -402,7 +404,7 @@
             this.Panel_Bottom.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Panel_Bottom.Location = new System.Drawing.Point(0, 571);
             this.Panel_Bottom.Name = "Panel_Bottom";
-            this.Panel_Bottom.Size = new System.Drawing.Size(1416, 261);
+            this.Panel_Bottom.Size = new System.Drawing.Size(1924, 261);
             this.Panel_Bottom.TabIndex = 3;
             // 
             // Group_DriveInfo
@@ -412,7 +414,7 @@
             this.Group_DriveInfo.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Group_DriveInfo.Location = new System.Drawing.Point(0, 0);
             this.Group_DriveInfo.Name = "Group_DriveInfo";
-            this.Group_DriveInfo.Size = new System.Drawing.Size(1416, 261);
+            this.Group_DriveInfo.Size = new System.Drawing.Size(1924, 261);
             this.Group_DriveInfo.TabIndex = 2;
             this.Group_DriveInfo.TabStop = false;
             this.Group_DriveInfo.Text = "设备数据";
@@ -432,14 +434,28 @@
             this.Grid_Data.ReadOnly = true;
             this.Grid_Data.RowHeadersWidth = 51;
             this.Grid_Data.RowTemplate.Height = 23;
-            this.Grid_Data.Size = new System.Drawing.Size(1410, 233);
+            this.Grid_Data.Size = new System.Drawing.Size(1918, 233);
             this.Grid_Data.TabIndex = 13;
+            // 
+            // Cmb_Listcod
+            // 
+            this.Cmb_Listcod.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.Cmb_Listcod.Font = new System.Drawing.Font("微软雅黑", 10F);
+            this.Cmb_Listcod.FormattingEnabled = true;
+            this.Cmb_Listcod.Items.AddRange(new object[] {
+            "指定端口测试"});
+            this.Cmb_Listcod.Location = new System.Drawing.Point(1274, 9);
+            this.Cmb_Listcod.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Cmb_Listcod.Name = "Cmb_Listcod";
+            this.Cmb_Listcod.Size = new System.Drawing.Size(136, 31);
+            this.Cmb_Listcod.TabIndex = 47;
+            this.Cmb_Listcod.SelectedIndexChanged += new System.EventHandler(this.Cmb_Listcod_SelectedIndexChanged);
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1416, 832);
+            this.ClientSize = new System.Drawing.Size(1924, 832);
             this.Controls.Add(this.Panel_Bottom);
             this.Controls.Add(this.Panel_View);
             this.Controls.Add(this.Panel_Midel);
@@ -498,6 +514,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button Btn_LoadComPort;
         private System.Windows.Forms.Button Btn_search;
+        private System.Windows.Forms.ComboBox Cmb_Listcod;
     }
 }
 

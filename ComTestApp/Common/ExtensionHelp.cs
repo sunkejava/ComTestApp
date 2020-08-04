@@ -11,6 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using ComTestApp.Entitys;
 using System.Threading.Tasks;
+using AllIn.Core.Util;
 
 namespace ComTestApp.Common
 {
@@ -120,37 +121,33 @@ namespace ComTestApp.Common
                 string whereStr = " where ";
                 foreach (var item in parameters)
                 {
-                    string colapp = "";
-                    if (item.Value.GetType().FullName.Equals("System.DateTime"))
-                    {
-                        colapp = item.Key.Contains("Start") ? " >= " : " <= ";
-                    }
                     if (whereStr.Contains("=") || whereStr.Contains("like"))
                     {
                         if (IsLike)
                         {
-                            whereStr = whereStr + " and " + item.Key + (colapp.IsEmpty() ? " like @" : colapp + " @") + item.Key;
+                            whereStr = whereStr + " and " + item.Key + " like @" + item.Key;
                         }
                         else
                         {
-                            whereStr = whereStr + " and " + item.Key + (colapp.IsEmpty() ? " = @" : colapp + " @") + item.Key;
+                            whereStr = whereStr + " and " + item.Key + " = @" + item.Key;
                         }
                     }
                     else
                     {
                         if (IsLike)
                         {
-                            whereStr = whereStr + item.Key + (colapp.IsEmpty() ? " like @" : colapp + " @") + item.Key;
+                            whereStr = whereStr + item.Key + " like @" + item.Key;
                         }
                         else
                         {
-                            whereStr = whereStr + item.Key + (colapp.IsEmpty() ? " = @" : colapp + " @") + item.Key;
+                            whereStr = whereStr + item.Key + " = @" + item.Key;
                         }
                     }
                 }
                 sqlStr = sqlStr + whereStr;
             }
             if (!orderFildes.IsEmpty()) sqlStr += " " + orderFildes;
+            //LogHelper.ToLog("sql语句:" + sqlStr);
             return SelectDataBySqlString<T>(sqlStr, parameters);
         }
 
@@ -242,7 +239,9 @@ namespace ComTestApp.Common
                         {
                             if (value.GetType().FullName.Equals("System.DateTime"))
                             {
-                                if (!value.ToString().Equals("0001/1/1 0:00:00"))
+                                LogHelper.ToLog("参数日期默认值：" + value.ToString());
+                                LogHelper.ToLog("系统默认日期值：" + default(DateTime).ToString());
+                                if (!value.ToString().Equals(default(DateTime).ToString()))
                                 {
                                     ret.Add(name, value);
                                 }

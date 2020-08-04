@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
@@ -472,24 +473,28 @@ namespace ComTestApp
             }
             Text_Number.Maximum = BoxDict.Count;   
             //抽屉层级
-            Dictionary<string, string> CardDict = ConstValue.GetDrawerCodeDic(hardType);
+            Dictionary<string, string> CardDict = ConstValue.GetDrawerCodeDic(hardType, boxValue);
             CardDict = CardDict.OrderBy(p => p.Key).ToDictionary(p => p.Key,o => o.Value);  
             //接口信息
             Dictionary<string, string> UsbPortDict = ConstValue.GetPortCodeDic(hardType);
             List<UsbPortEntity> portEntitys = new List<UsbPortEntity>();
             int i = 1;
+            List<string> codeStrs = new List<string>();
+            codeStrs.Add(string.Empty);
             //foreach (var BoxItem in BoxDict)
             //{
-                foreach (var CardItem in CardDict)
+            foreach (var CardItem in CardDict)
                 {
                     foreach (var item in UsbPortDict)
                     {
                         portEntitys.Add(new UsbPortEntity() { Num = i,BatchNumber = DateTime.Now.ToString("yyyyMMddHHmmss"),BoxId = boxValue, CardId = CardItem.Key,CardName = CardItem.Value,PortId = item.Value,PortStatus = "未检测",SerialPortName = SerialPortName,HardType = hardType });
+                        codeStrs.Add(boxValue + CardItem.Key + item.Value);
                         i++;
                     }
                 }
             //}    
             BindUpdateGridData(portEntitys);
+            DelegateUpCmbData(codeStrs);
         }
         /// <summary>
         /// 初始化DataGrid列
@@ -626,8 +631,8 @@ namespace ComTestApp
                     Left = 5,
                     Top = 5
                 };
-                //Console.WriteLine("默认page大小为:1408,422");
-                //Console.WriteLine(string.Format("Page的大小为{0}，group的大小为{1}", tabPage1.Size, gropBox.Size));
+            //Console.WriteLine("默认page大小为:1408,422");
+            //Console.WriteLine(string.Format("Page的大小为{0}，group的大小为{1}", tabPage1.Size, gropBox.Size));
                 bool IsA1 = hardType.Equals("A1");
                 for (int i = 1; i <= (IsA1 ? 21 * 3 : 20); i++)
                 {
@@ -811,6 +816,24 @@ namespace ComTestApp
             }
         }
 
+        delegate void UpdateCmbData(List<string> ls);
+        private void DelegateUpCmbData(List<string> ls)
+        {
+            if (Cmb_Listcod.InvokeRequired)
+            {
+                while (!Cmb_Listcod.IsHandleCreated)
+                {
+                    if (Cmb_Listcod.IsDisposed || Cmb_Listcod.Disposing) return;
+                }
+                Cmb_Listcod.Invoke(new UpdateCmbData(DelegateUpCmbData), new object[] { ls });
+            }
+            else
+            {
+                Cmb_Listcod.DataSource = ls;
+            }
+        }
+
+
         /// <summary>
         /// 更新标签
         /// </summary>
@@ -822,6 +845,7 @@ namespace ComTestApp
         {
             UpdateMsg(string.Format("当前批次【{0}】已检测耗时{1}，共计检测端口{2}个，成功率为{3}%", batchNum, timeStr, portCount, ratioStr));
         }
+
         #endregion
 
         #region 检测相关
@@ -1133,6 +1157,24 @@ namespace ComTestApp
             
         }
 
+        private async void Cmb_Listcod_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string seletxt = Cmb_Listcod.Text;
+            await Task.Run(() => 
+            {
+                if (seletxt.IsEmpty()) return;
+                var boxCode = seletxt.Substring(0, 2);
+                var banCode = seletxt.Substring(2, 2);
+                var portId = seletxt.Substring(4, 2);
+                var usps = Grid_Data.DataSource.ToSerializeObject().ToDeserializeObject<List<UsbPortEntity>>();
+                var portEntity = usps.Find(o => o.BoxId == boxCode && o.CardId == banCode && o.PortId == portId);
+                UpdateDevieInfo(portEntity);
+                var IsSuc = comport.ReadCommPort(portEntity);
+                portEntity.PortStatus = IsSuc ? "成功" : "失败";
+                UpdateDevieInfo(portEntity);
+            });
+        }
+        
         /// <summary>
         /// 随机检测5~10个
         /// </summary>

@@ -145,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\Release\SQLite.Interop.dll" />
+    <None Include="Resources\v2-4b8fa0cc18d41b08f72a157bd5218c8d_r.jpg" />
     <Content Include="网申大师图标.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
