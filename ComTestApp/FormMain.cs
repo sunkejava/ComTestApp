@@ -416,6 +416,29 @@ namespace ComTestApp
             FormSearch frs = new FormSearch();
             frs.ShowDialog();
         }
+
+        private async void Cmb_Listcod_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string seletxt = Cmb_Listcod.Text;
+            await Task.Run(() =>
+            {
+                if (seletxt.IsEmpty()) return;
+                startTime = DateTime.Now;
+                var boxCode = seletxt.Substring(0, 2);
+                var banCode = seletxt.Substring(2, 2);
+                var portId = seletxt.Substring(4, 2);
+                UpdateMsg(string.Format("正在测试箱子{0}板子{1}的端口{2}是否正常,请稍后！", boxCode, banCode, portId));
+                var usps = Grid_Data.DataSource.ToSerializeObject().ToDeserializeObject<List<UsbPortEntity>>();
+                var portEntity = usps.Find(o => o.BoxId == boxCode && o.CardId == banCode && o.PortId == portId);
+                UpdateDevieInfo(portEntity);
+                var IsSuc = comport.ReadCommPort(portEntity);
+                portEntity.PortStatus = IsSuc ? "成功" : "失败";
+                endTime = DateTime.Now;
+                UpdateMsg(string.Format("箱子{0}板子{1}的端口{2},共耗时{3}！", boxCode, banCode, portId + portEntity.PortStatus, ExtensionHelp.DateDiff(startTime, endTime)));
+                UpdateDevieInfo(portEntity);
+            });
+        }
+
         #endregion
 
         #region 自定义方法
@@ -1157,24 +1180,6 @@ namespace ComTestApp
             
         }
 
-        private async void Cmb_Listcod_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            string seletxt = Cmb_Listcod.Text;
-            await Task.Run(() => 
-            {
-                if (seletxt.IsEmpty()) return;
-                var boxCode = seletxt.Substring(0, 2);
-                var banCode = seletxt.Substring(2, 2);
-                var portId = seletxt.Substring(4, 2);
-                var usps = Grid_Data.DataSource.ToSerializeObject().ToDeserializeObject<List<UsbPortEntity>>();
-                var portEntity = usps.Find(o => o.BoxId == boxCode && o.CardId == banCode && o.PortId == portId);
-                UpdateDevieInfo(portEntity);
-                var IsSuc = comport.ReadCommPort(portEntity);
-                portEntity.PortStatus = IsSuc ? "成功" : "失败";
-                UpdateDevieInfo(portEntity);
-            });
-        }
-        
         /// <summary>
         /// 随机检测5~10个
         /// </summary>
