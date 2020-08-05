@@ -12,6 +12,10 @@ using System.Text.RegularExpressions;
 using ComTestApp.Entitys;
 using System.Threading.Tasks;
 using AllIn.Core.Util;
+using System.Windows.Forms;
+using System.Data.SQLite;
+using System.Data.SqlClient;
+using System.Data.Common;
 
 namespace ComTestApp.Common
 {
@@ -208,12 +212,98 @@ namespace ComTestApp.Common
 
         private static List<T> SelectDataBySqlString<T>(string sqlStr, Dictionary<string, Object> parameters)
         {
-            Console.WriteLine("sql语句:" + sqlStr);
+            //Console.WriteLine("sql语句:" + sqlStr);
             return (new BaseEntityHelper.SqLiteHelper()).ExecuteDataTable(sqlStr, parameters).ToSerializeObject().ToDeserializeObject<List<T>>();
         }
 
         #endregion
 
+        #region 批量插入相关
+        private static bool InsertEntitys(string sqlStr,List<Dictionary<string,object>> data)
+        {
+            bool IsIn = false;
+            using (SQLiteConnection connection = new SQLiteConnection(ConnStr()))
+            {
+                if (connection.State != ConnectionState.Open) connection.Open();
+                using (SQLiteCommand cmd = new SQLiteCommand())
+                {
+                    using (DbTransaction trans = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            cmd.Parameters.Clear();
+                            cmd.Connection = connection;
+                            cmd.CommandText = sqlStr;
+                            //cmd.CommandType = CommandType.Text;
+                            cmd.CommandTimeout = 50;
+                            int i = 0;
+                            if (data != null && data.Count > 0)
+                            {
+                                foreach (var param in data)
+                                {
+                                    foreach (var item in param)
+                                    {
+                                        cmd.Parameters.AddWithValue(item.Key, item.Value);
+                                    }
+                                    i += cmd.ExecuteNonQuery();
+                                }
+                            }
+                            trans.Commit();
+                            if (i > 0) IsIn = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            trans.Rollback();
+                            LogHelper.ToLog("数据插入失败,原因为:" + ex);
+                        }
+                        
+                    }
+                }
+            }
+            return IsIn;
+        }
+
+        private static string ConnStr()
+        {
+            SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder() 
+            {
+                DataSource = AppDomain.CurrentDomain.BaseDirectory + @"\allin",
+                Password = "bj_allin_sh"
+            };
+            return builder.ConnectionString;
+        }
+
+        public static bool BatchInsert<T>(this List<T> uts)
+        {
+            Dictionary<string, Object> parameters = GetProperties(uts[0]);
+            string sqlStr = "Insert into " + GetTableName<T>();
+            sqlStr = GenerateInserSqlStr(sqlStr, parameters);
+            List<Dictionary<string, Object>> paras = new List<Dictionary<string, object>>();
+            foreach (var item in uts)
+            {
+                paras.Add(GetProperties(item));
+            }
+            return InsertEntitys(sqlStr,paras);
+        }
+
+        private static string GenerateInserSqlStr(string sqlStr, Dictionary<string, object> parameters)
+        {
+            if (parameters != null && parameters.Count > 0)
+            {
+                string whereStr = " values (";
+                string valStr = "";
+                foreach (var item in parameters)
+                {
+                    valStr = valStr + " @" + item.Key + ",";
+                }
+                whereStr = "(" + valStr.Substring(0, valStr.Length - 1).Replace("@", "") + ")" + whereStr;
+                whereStr = whereStr + valStr.Substring(0, valStr.Length - 1) + ")";
+                sqlStr = sqlStr + whereStr;
+                return sqlStr;
+            }
+            else { return sqlStr; }
+        }
+        #endregion
         private static Dictionary<string, Object> GetProperties<T>(T t, Boolean IsLike = false)
         {
             var ret = new Dictionary<string, object>();
@@ -239,8 +329,8 @@ namespace ComTestApp.Common
                         {
                             if (value.GetType().FullName.Equals("System.DateTime"))
                             {
-                                LogHelper.ToLog("参数日期默认值：" + value.ToString());
-                                LogHelper.ToLog("系统默认日期值：" + default(DateTime).ToString());
+                                //LogHelper.ToLog("参数日期默认值：" + value.ToString());
+                                //LogHelper.ToLog("系统默认日期值：" + default(DateTime).ToString());
                                 if (!value.ToString().Equals(default(DateTime).ToString()))
                                 {
                                     ret.Add(name, value);
@@ -414,6 +504,22 @@ namespace ComTestApp.Common
                 }
             }
             return t;
+        }
+
+        public static void DelegateControl(this Control cl, Action action)
+        {
+            if (cl.InvokeRequired)
+            {
+                if (cl.IsHandleCreated)
+                {
+                    if (cl.IsDisposed || cl.Disposing) return;
+                }
+                cl.Invoke(action);
+            }
+            else 
+            {
+                cl.Invoke(action);
+            }
         }
 
     }

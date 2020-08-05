@@ -427,14 +427,22 @@ namespace ComTestApp
                 var boxCode = seletxt.Substring(0, 2);
                 var banCode = seletxt.Substring(2, 2);
                 var portId = seletxt.Substring(4, 2);
-                UpdateMsg(string.Format("正在测试箱子{0}板子{1}的端口{2}是否正常,请稍后！", boxCode, banCode, portId));
+                Lb_Msg.DelegateControl(() => 
+                { 
+                    Lb_Msg.Text = string.Format("正在检测箱子{0}板子{1}的端口{2}是否正常,请稍后！", boxCode, banCode, portId);
+                    Lb_Msg.Refresh();
+                });
                 var usps = Grid_Data.DataSource.ToSerializeObject().ToDeserializeObject<List<UsbPortEntity>>();
                 var portEntity = usps.Find(o => o.BoxId == boxCode && o.CardId == banCode && o.PortId == portId);
                 UpdateDevieInfo(portEntity);
                 var IsSuc = comport.ReadCommPort(portEntity);
                 portEntity.PortStatus = IsSuc ? "成功" : "失败";
                 endTime = DateTime.Now;
-                UpdateMsg(string.Format("箱子{0}板子{1}的端口{2},共耗时{3}！", boxCode, banCode, portId + portEntity.PortStatus, ExtensionHelp.DateDiff(startTime, endTime)));
+                Lb_Msg.DelegateControl(
+                    () => { 
+                        Lb_Msg.Text = string.Format("箱子{0}板子{1}的端口{2},共耗时{3}！", boxCode, banCode, portId +"检测"+ portEntity.PortStatus, ExtensionHelp.DateDiff(startTime, endTime));
+                        Lb_Msg.Refresh();
+                    });
                 UpdateDevieInfo(portEntity);
             });
         }
@@ -481,7 +489,7 @@ namespace ComTestApp
                 default:
                     break;
             }
-            DelegateUpTab(tp);
+            tabControl1.DelegateControl(() => { tabControl1.SelectedTab = tp; });
             if (SerialPortName.IsEmpty() && Cmb_PortList.Items.Count > 0) SerialPortName = Cmb_PortList.Text;
             //设备箱体
             Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, UserContext.ProductCounts);
@@ -516,8 +524,11 @@ namespace ComTestApp
                     }
                 }
             //}    
-            BindUpdateGridData(portEntitys);
-            DelegateUpCmbData(codeStrs);
+            Grid_Data.DelegateControl(() => 
+            {
+                Grid_Data.DataSource = new BindingList<UsbPortEntity>(portEntitys);
+            });
+            Cmb_Listcod.DelegateControl(() => { Cmb_Listcod.DataSource = codeStrs; });
         }
         /// <summary>
         /// 初始化DataGrid列
@@ -604,7 +615,10 @@ namespace ComTestApp
                 tabPage1.Text = hardType + "设备信息";
                 tabPage1.Controls.Add( GenerateControl());
             }
-            UpdateMsg(string.Format("当前批次【{0}】已检测耗时{1}，共计检测端口{2}个，成功率为{3}%","xxx","xx秒","xxx","xx"));
+            Lb_Msg.DelegateControl(() => {
+                Lb_Msg.Text = string.Format("当前批次【{0}】已检测耗时{1}，共计检测端口{2}个，成功率为{3}%", "xxx", "xx秒", "xxx", "xx");
+                Lb_Msg.Refresh();
+            });
             tabControl1.Refresh();
         }
 
@@ -642,7 +656,11 @@ namespace ComTestApp
         /// <returns></returns>
         private Panel GenerateControl(int hardNum = 1)
         {
-            UpdateMsg("创建设备{" + hardNum + "}控件中，请稍后......");
+            Lb_Msg.DelegateControl(() =>
+            {
+                Lb_Msg.Text = "创建设备{" + hardNum + "}控件中，请稍后......";
+                Lb_Msg.Refresh();
+            }) ;
             
                 //创建承载控件GroupBox
                 Panel gropBox = new Panel()
@@ -701,162 +719,6 @@ namespace ComTestApp
             }
         }
 
-        delegate void SetMsgInfo(string info);
-
-        private void UpdateMsg(string Text)
-        {
-            if (this.Lb_Msg.InvokeRequired)
-            {
-                while (!this.Lb_Msg.IsHandleCreated)
-                {
-                    if (this.Lb_Msg.IsDisposed || this.Lb_Msg.Disposing) return;
-                }
-                SetMsgInfo si = new SetMsgInfo(UpdateMsg);
-                this.Lb_Msg.Invoke(si, new object[] { Text });
-            }
-            else
-            {
-                this.Lb_Msg.Text = Text;
-                this.Lb_Msg.Refresh();
-            }
-        }
-
-        delegate void BindDataToGrid(List<UsbPortEntity> entitys);
-
-        private void BindUpdateGridData(List<UsbPortEntity> entitys)
-        {
-            if (this.Grid_Data.InvokeRequired)
-            {
-                while (!this.Grid_Data.IsHandleCreated)
-                {
-                    if (this.Grid_Data.IsDisposed || this.Grid_Data.Disposing) return;
-                }
-                BindDataToGrid dttd = new BindDataToGrid(BindUpdateGridData);
-                this.Grid_Data.Invoke(dttd, new object[] { entitys });
-            }
-            else
-            {
-                Grid_Data.DataSource = new BindingList<UsbPortEntity>(entitys);
-            }
-        }
-
-        delegate void SetDgCell(DataGridViewCell dgvc);
-
-        private void DelegateUpDgCell(DataGridViewCell dgvc)
-        {
-            if (this.Grid_Data.InvokeRequired)
-            {
-                while (!this.Grid_Data.IsHandleCreated)
-                {
-                    if (this.Grid_Data.IsDisposed || this.Grid_Data.Disposing) return;
-                }
-                SetDgCell dttd = new SetDgCell(DelegateUpDgCell);
-                this.Grid_Data.Invoke(dttd, new object[] { dgvc });
-            }
-            else
-            {
-                Grid_Data.CurrentCell = dgvc;
-            }
-        }
-
-        delegate void UpdateControl(bool IsEn, string Text);
-
-        private void DelegateUpStart(bool IsEn,string Text)
-        {
-            if (this.Btn_Start.InvokeRequired)
-            {
-                while (!this.Btn_Start.IsHandleCreated)
-                {
-                    if (this.Btn_Start.IsDisposed || this.Btn_Start.Disposing) return;
-                }
-                UpdateControl uc = new UpdateControl(DelegateUpStart);
-                this.Btn_Start.Invoke(uc, new object[] { IsEn, Text });
-            }
-            else
-            {
-                Btn_Start.Text = Text;
-                Btn_Start.Enabled = IsEn;
-            }
-        }
-
-        private void DelegateUpEnd(bool IsEn, string Text)
-        {
-            if (this.Btn_End.InvokeRequired)
-            {
-                while (!this.Btn_End.IsHandleCreated)
-                {
-                    if (this.Btn_End.IsDisposed || this.Btn_End.Disposing) return;
-                }
-                UpdateControl uc = new UpdateControl(DelegateUpEnd);
-                this.Btn_End.Invoke(uc, new object[] { IsEn, Text });
-            }
-            else
-            {
-                Btn_End.Text = Text;
-                Btn_End.Enabled = IsEn;
-            }
-        }
-
-        private void DelegateUpBack(ExLabel cn,Color cl)
-        {
-            if (cn.InvokeRequired)
-            {
-                while (!cn.IsHandleCreated)
-                {
-                    if (cn.IsDisposed || cn.Disposing) return;
-                }
-                cn.Invoke((EventHandler)delegate
-                {
-                    cn.BaseColor = cl;
-                    //Console.WriteLine(string.Format("修改{0}的背景色为{1}", cn.Name, cl));
-                    //cn.BackColor = cl;
-                    cn.Refresh();
-                });
-            }
-            else
-            {
-                cn.BaseColor = cl;
-                //Console.WriteLine(string.Format("修改{0}的背景色为{1}",cn.Name,cl));
-                //cn.BackColor = cl;
-                cn.Refresh();
-            }
-        }
-
-        delegate void UpdateTabSelect(TabPage tp);
-        private void DelegateUpTab(TabPage tp)
-        {
-            if (tabControl1.InvokeRequired)
-            {
-                while (!tabControl1.IsHandleCreated)
-                {
-                    if (tabControl1.IsDisposed || tabControl1.Disposing) return;
-                }
-                tabControl1.Invoke(new UpdateTabSelect(DelegateUpTab), new object[] { tp });
-            }
-            else 
-            {
-                tabControl1.SelectedTab = tp;
-            }
-        }
-
-        delegate void UpdateCmbData(List<string> ls);
-        private void DelegateUpCmbData(List<string> ls)
-        {
-            if (Cmb_Listcod.InvokeRequired)
-            {
-                while (!Cmb_Listcod.IsHandleCreated)
-                {
-                    if (Cmb_Listcod.IsDisposed || Cmb_Listcod.Disposing) return;
-                }
-                Cmb_Listcod.Invoke(new UpdateCmbData(DelegateUpCmbData), new object[] { ls });
-            }
-            else
-            {
-                Cmb_Listcod.DataSource = ls;
-            }
-        }
-
-
         /// <summary>
         /// 更新标签
         /// </summary>
@@ -866,9 +728,12 @@ namespace ComTestApp
         /// <param name="ratioStr">成功比率</param>
         private void UpdateTakeUpInfo(string batchNum,string timeStr,string portCount,string ratioStr)
         {
-            UpdateMsg(string.Format("当前批次【{0}】已检测耗时{1}，共计检测端口{2}个，成功率为{3}%", batchNum, timeStr, portCount, ratioStr));
+            Lb_Msg.DelegateControl(() =>
+            {
+                Lb_Msg.Text = string.Format("当前批次【{0}】已检测耗时{1}，共计检测端口{2}个，成功率为{3}%", batchNum, timeStr, portCount, ratioStr);
+                Lb_Msg.Refresh();
+            });
         }
-
         #endregion
 
         #region 检测相关
@@ -940,8 +805,17 @@ namespace ComTestApp
                     else
                     {
                         stop = true;
-                        DelegateUpEnd(false, "结束");
-                        DelegateUpStart(true, "开始");
+                        //DelegateUpEnd(false, "结束");
+                        Btn_End.DelegateControl(() =>
+                        {
+                            Btn_End.Text = "结束";
+                            Btn_End.Enabled = false;
+                        });
+                        Btn_Start.DelegateControl(() =>
+                        {
+                            Btn_Start.Text = "开始";
+                            Btn_Start.Enabled = true;
+                        });
                         break;
                     }
                 }
@@ -1007,18 +881,32 @@ namespace ComTestApp
                 {
                     if (entity.PortStatus.Equals("未检测"))
                     {
-                        DelegateUpBack(ct, Color.Gold);
+                        ct.DelegateControl(() => 
+                        {
+                            ct.BaseColor = Color.Gold;
+                            //cn.BackColor = Color.Gold;
+                            ct.Refresh();
+                        });
+                        
                         return true;
                     }
                     if (entity.PortStatus.Equals("成功"))
                     {
-                        //lb.BackColor = Color.ForestGreen;
-                        DelegateUpBack(ct, Color.ForestGreen);
+                        ct.DelegateControl(() =>
+                        {
+                            ct.BaseColor = Color.ForestGreen;
+                            //cn.BackColor = Color.ForestGreen;
+                            ct.Refresh();
+                        });
                     }
                     else
                     {
-                        //lb.BackColor = Color.DarkRed;
-                        DelegateUpBack(ct, Color.IndianRed);
+                        ct.DelegateControl(() =>
+                        {
+                            ct.BaseColor = Color.IndianRed;
+                            //cn.BackColor = Color.IndianRed;
+                            ct.Refresh();
+                        });
                     }
                 }
                 return true;
@@ -1074,7 +962,10 @@ namespace ComTestApp
                             return false;
                         }
                         mre.WaitOne();
-                        DelegateUpDgCell(item.Cells["Num"]);
+                        Grid_Data.DelegateControl(() => 
+                            {
+                                Grid_Data.CurrentCell = item.Cells["Num"];
+                            });
                         UsbPortEntity portEntity = item.DataBoundItem.ToSerializeObject().ToDeserializeObject<UsbPortEntity>();
                         UpdateDevieInfo(portEntity);
                         portEntity.StartTime = DateTime.Now;
@@ -1094,13 +985,14 @@ namespace ComTestApp
                         //更新控件样式
                         UpdateDevieInfo(portEntity);
                         //插入数据库
-                        this.BaseEntityHelp().Insert(portEntity);
+                        //this.BaseEntityHelp().Insert(portEntity);
                         portCount++;
                         if (IsSuc) portSuc++;
                         UpdateTakeUpInfo(portEntity.BatchNumber, ExtensionHelp.DateDiff(startTime, endTime), portCount.ToString(), (portSuc * 1.0 / portCount * 100).ToString("0.0"));
                         item.DefaultCellStyle.BackColor = defaultColor;
                         //IsRead = false;
                     }
+                    BatchSaveData();
                 }
                 return true;
             }
@@ -1141,7 +1033,7 @@ namespace ComTestApp
                             i = rdm.Next(0, Grid_Data.Rows.Count);
                         }
                         rlc.Add(i);
-                        DelegateUpDgCell(Grid_Data.Rows[i].Cells["Num"]);
+                        Grid_Data.DelegateControl(() => { Grid_Data.CurrentCell = Grid_Data.Rows[i].Cells["Num"]; });
                         Grid_Data.Rows[i].Cells["StartTime"].Value = DateTime.Now;
                         Grid_Data.Rows[i].Cells["BoxId"].Value = boxItem.Value;
                         UsbPortEntity portEntity = Grid_Data.Rows[i].DataBoundItem.ToSerializeObject().ToDeserializeObject<UsbPortEntity>();
@@ -1159,13 +1051,14 @@ namespace ComTestApp
                         //更新控件样式
                         UpdateDevieInfo(portEntity);
                         //插入数据库
-                        this.BaseEntityHelp().Insert(portEntity);
+                        //this.BaseEntityHelp().Insert(portEntity);
                         portCount++;
                         if (IsSuc) portSuc++;
                         UpdateTakeUpInfo(portEntity.BatchNumber, ExtensionHelp.DateDiff(startTime, endTime), portCount.ToString(), (portSuc * 1.0 / portCount * 100).ToString("0.0"));
                         Grid_Data.Rows[i].DefaultCellStyle.BackColor = defaultColor;
                         //IsRead = false;
                     }
+                    BatchSaveData();
                 }
                 return true;
             }
@@ -1208,7 +1101,7 @@ namespace ComTestApp
                             i = rdm.Next(0, Grid_Data.Rows.Count);
                         }
                         rlc.Add(i);
-                        DelegateUpDgCell(Grid_Data.Rows[i].Cells["Num"]);
+                        Grid_Data.DelegateControl(() => { Grid_Data.CurrentCell = Grid_Data.Rows[i].Cells["Num"]; });
                         Grid_Data.Rows[i].Cells["StartTime"].Value = DateTime.Now;
                         Grid_Data.Rows[i].Cells["BoxId"].Value = boxItem.Value;
                         UsbPortEntity portEntity = Grid_Data.Rows[i].DataBoundItem.ToSerializeObject().ToDeserializeObject<UsbPortEntity>();
@@ -1226,13 +1119,14 @@ namespace ComTestApp
                         //更新控件样式
                         UpdateDevieInfo(portEntity);
                         //插入数据库
-                        this.BaseEntityHelp().Insert(portEntity);
+                        //this.BaseEntityHelp().Insert(portEntity);
                         portCount++;
                         if (IsSuc) portSuc++;
                         UpdateTakeUpInfo(portEntity.BatchNumber, ExtensionHelp.DateDiff(startTime, endTime), portCount.ToString(), (portSuc * 1.0 / portCount * 100).ToString("0.0"));
                         Grid_Data.Rows[i].DefaultCellStyle.BackColor = defaultColor;
                         //IsRead = false;
                     }
+                    BatchSaveData();
                 }
                 return true;
             }
@@ -1245,6 +1139,21 @@ namespace ComTestApp
                 return false;
             }
             
+        }
+
+        /// <summary>
+        /// 批量保存数据到库
+        /// </summary>
+        /// <returns></returns>
+        private bool BatchSaveData()
+        {
+            //每张表更新完毕之后进行批量插入操作
+            var datas = Grid_Data.DataSource.ToSerializeObject().ToDeserializeObject<List<UsbPortEntity>>().FindAll(o => !o.PortStatus.Equals("未检测"));
+            if (datas.Count > 0)
+            {
+                return datas.BatchInsert();
+            }
+            return false;
         }
 
         private void setDataGridStyle()
