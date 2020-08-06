@@ -308,7 +308,7 @@ namespace ComTestApp
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void Btn_Start_Click(object sender, EventArgs e)
+        private void Btn_Start_Click(object sender, EventArgs e)
         {
             //检测
             if (Cmb_CheckNum.Text.IsEmpty() || Cmb_CheckModel.Text.IsEmpty())
@@ -322,23 +322,23 @@ namespace ComTestApp
                 {
                     InitHardView();
                     portCount = portSuc = 0;
-                    switch (hardNum)
-                    {
-                        case 1:
-                            while (tabPage1.Controls.Count == 0) { await Task.Delay(100); }
-                            break;
-                        case 2:
-                            while (tabPage2.Controls.Count == 0) { await Task.Delay(100); }
-                            break;
-                        case 3:
-                            while (tabPage3.Controls.Count == 0) { await Task.Delay(100); }
-                            break;
-                        case 4:
-                            while (tabPage4.Controls.Count == 0) { await Task.Delay(100); }
-                            break;
-                        default:
-                            break;
-                    }
+                    //switch (hardNum)
+                    //{
+                    //    case 1:
+                    //        while (tabPage1.Controls.Count == 0) { await Task.Delay(100); }
+                    //        break;
+                    //    case 2:
+                    //        while (tabPage2.Controls.Count == 0) { await Task.Delay(100); }
+                    //        break;
+                    //    case 3:
+                    //        while (tabPage3.Controls.Count == 0) { await Task.Delay(100); }
+                    //        break;
+                    //    case 4:
+                    //        while (tabPage4.Controls.Count == 0) { await Task.Delay(100); }
+                    //        break;
+                    //    default:
+                    //        break;
+                    //}
                     startTime = DateTime.Now;
                     if (th != null && !th.IsAlive)
                     {
