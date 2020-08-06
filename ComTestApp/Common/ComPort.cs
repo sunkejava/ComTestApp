@@ -32,8 +32,8 @@ namespace ComTestApp.Common
                 var boxCode = entity.BoxId;  //箱体 名称 
                 string bkName = entity.CardName;
                 string portName = entity.PortId;
-                var drawerCode = string.Empty;
-                var drawerCodes = ConstValue.GetDrawerCodeDic(entity.HardType,boxCode); //获取 是 C1 还是 A1
+                var drawerCode = entity.CardId;
+                var drawerCodes = ConstValue.GetDrawerCodeDic(entity.HardType, boxCode); //获取 是 C1 还是 A1
                 if (null != drawerCodes && drawerCodes.Keys.Any())
                 {
                     foreach (var key in drawerCodes.Keys)

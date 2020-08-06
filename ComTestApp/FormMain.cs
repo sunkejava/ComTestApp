@@ -217,9 +217,10 @@ namespace ComTestApp
             if (Cmb_PortList != null && Cmb_PortList.SelectedValue != null)
             {
                 hardType = Cmb_HardList.SelectedValue.ToString();
-                Text_Number.Enabled = Text_Number.ReadOnly = hardType.Equals("A1");
-                hardNum = ConstValue.GetBoxCodesDic(hardType, UserContext.ProductCounts).Count;
-                appConfig.hardNum = hardNum;
+                Text_Number.Enabled = hardType.Equals("A1");
+                Text_Number.ReadOnly = hardType.Equals("C1");
+                hardNum = (int)Text_Number.Value;//ConstValue.GetBoxCodesDic(hardType, hardNum.ToString()).Count;
+                if (appConfig != null) appConfig.hardNum = hardNum;
                 InitHardView();
                 LoadHardWareInfo(1);
             }
@@ -246,7 +247,7 @@ namespace ComTestApp
             if (appConfig != null) appConfig.hardNum = Text_Number.Value;
             hardNum = (int)Text_Number.Value;
             InitHardView();
-            //LoadHardWareInfo(hardNum);            
+            LoadHardWareInfo(1);            
         }
 
         /// <summary>
@@ -266,7 +267,7 @@ namespace ComTestApp
         /// <param name="e"></param>
         private void Cmb_CheckNum_SelectedIndexChanged(object sender, EventArgs e)
         {
-            appConfig.checkNumIndex = Cmb_CheckNum.SelectedIndex;
+            if(appConfig != null) appConfig.checkNumIndex = Cmb_CheckNum.SelectedIndex;
             if (Cmb_CheckNum.Text.Equals("单次"))
             {
                 checkNum = CheckEnum.CheckNum.Single;
@@ -283,7 +284,7 @@ namespace ComTestApp
         /// <param name="e"></param>
         private void Cmb_CheckModel_SelectedIndexChanged(object sender, EventArgs e)
         {
-            appConfig.checkModelIndex = Cmb_CheckModel.SelectedIndex;
+            if(appConfig != null) appConfig.checkModelIndex = Cmb_CheckModel.SelectedIndex;
             switch (Cmb_CheckModel.Text.Trim())
             {
                 case "顺序":
@@ -407,7 +408,7 @@ namespace ComTestApp
             {
                 Num_Waiting.Value = Num_Waiting.Minimum;
             }
-            appConfig.waitNum = Num_Waiting.Value;
+            if (appConfig != null) appConfig.waitNum = Num_Waiting.Value;
             comport.waitingNum = (int)Num_Waiting.Value;            
         }
 
@@ -415,6 +416,42 @@ namespace ComTestApp
         {
             FormSearch frs = new FormSearch();
             frs.ShowDialog();
+        }
+
+        private async void Btn_Send_Click(object sender, EventArgs e)
+        {
+            string seletxt = Cmb_Listcod.Text;
+            await Task.Run(() =>
+            {
+                if (seletxt.IsEmpty()) return;
+                startTime = DateTime.Now;
+                var boxCode = seletxt.Substring(0, 2);
+                var banCode = seletxt.Substring(2, 2);
+                var portId = seletxt.Substring(4, 2);
+                var ban = int.Parse(banCode) % 3;
+                var banStr = ban == 1 ? "下层" : ban == 2 ? "中层" : "上层";
+                Lb_Msg.DelegateControl(() =>
+                {
+                    Lb_Msg.Text = string.Format("正在检测箱子{0}板子{1}的端口{2}是否正常,请稍后！", boxCode, banCode, portId);
+                    Lb_Msg.Refresh();
+                });
+                var usps = Grid_Data.DataSource.ToSerializeObject().ToDeserializeObject<List<UsbPortEntity>>();
+                var portEntity = usps[0];
+                portEntity.BoxId = boxCode;
+                portEntity.CardId = banCode;
+                portEntity.PortId = portId;
+                portEntity.CardName = banStr;
+                UpdateDevieInfo(portEntity);
+                var IsSuc = comport.ReadCommPort(portEntity);
+                portEntity.PortStatus = IsSuc ? "成功" : "失败";
+                endTime = DateTime.Now;
+                Lb_Msg.DelegateControl(
+                    () => {
+                        Lb_Msg.Text = string.Format("箱子{0}板子{1}的端口{2},共耗时{3}！", boxCode, banCode, portId + "检测" + portEntity.PortStatus, ExtensionHelp.DateDiff(startTime, endTime));
+                        Lb_Msg.Refresh();
+                    });
+                UpdateDevieInfo(portEntity);
+            });
         }
 
         private async void Cmb_Listcod_SelectedIndexChanged(object sender, EventArgs e)
@@ -460,9 +497,12 @@ namespace ComTestApp
             foreach (string pName in PortNames)
             { if(!pName.Equals("COM1")) list.Add(pName); }
             Cmb_PortList.DataSource = list;
-            if (Cmb_PortList.Items.Count > 0)
-                Cmb_PortList.SelectedIndex = 0;SerialPortName = Cmb_PortList.SelectedValue.ToString();
-            hardNum = ConstValue.GetBoxCodesDic(hardType, UserContext.ProductCounts).Count;
+            if (Cmb_PortList.Items.Count > 0) 
+            {
+                Cmb_PortList.SelectedIndex = 0; 
+                SerialPortName = Cmb_PortList.SelectedValue.ToString();
+            }
+            hardNum = (int)Text_Number.Value;
             if (appConfig != null) appConfig.hardNum = hardNum;
         }
 
@@ -492,17 +532,16 @@ namespace ComTestApp
             tabControl1.DelegateControl(() => { tabControl1.SelectedTab = tp; });
             if (SerialPortName.IsEmpty() && Cmb_PortList.Items.Count > 0) SerialPortName = Cmb_PortList.Text;
             //设备箱体
-            Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, UserContext.ProductCounts);
+            Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, hardNum.ToString());
             string boxValue = "";
             foreach (var item in BoxDict)
             {
-                string val = boxNum == 1 ? "00" : AppedNumber(boxNum);
+                string val = AppedNumber(boxNum  - 1);
                 if (item.Key.Equals(val))
                 {
                     boxValue = item.Value;
                 }
             }
-            Text_Number.Maximum = BoxDict.Count;   
             //抽屉层级
             Dictionary<string, string> CardDict = ConstValue.GetDrawerCodeDic(hardType, boxValue);
             CardDict = CardDict.OrderBy(p => p.Key).ToDictionary(p => p.Key,o => o.Value);  
@@ -871,7 +910,10 @@ namespace ComTestApp
                 ExLabel ct = null;
                 if (hardType.Equals("A1"))
                 {
-                    ct = tp.Controls[0].Controls.OfType<Control>().Where(o => o.Name.Split('_')[1].Equals(entity.HardType) && o.Name.Split('_')[2].Equals((int.Parse(entity.BoxId) + 1).ToString()) && o.Name.Split('_')[3].Equals(int.Parse(entity.PortId).ToString()) && o.Name.Split('_')[4].Equals((4-int.Parse(entity.CardId)).ToString())).FirstOrDefault() as ExLabel;
+                    int cId = int.Parse(entity.CardId) % 3;
+                    cId = cId == 0 ? 3 : cId;
+                    string cardId = (4-cId).ToString();
+                    ct = tp.Controls[0].Controls.OfType<Control>().Where(o => o.Name.Split('_')[1].Equals(entity.HardType) && o.Name.Split('_')[2].Equals((int.Parse(entity.BoxId) + 1).ToString()) && o.Name.Split('_')[3].Equals(int.Parse(entity.PortId).ToString()) && o.Name.Split('_')[4].Equals(cardId)).FirstOrDefault() as ExLabel;
                 }
                 else
                 {
@@ -950,7 +992,7 @@ namespace ComTestApp
             try
             {
                 //设备箱体
-                Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, UserContext.ProductCounts);
+                Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, hardNum.ToString());
                 Color defaultColor = Color.Black;
                 foreach (var boxItem in BoxDict)
                 {
@@ -1013,11 +1055,11 @@ namespace ComTestApp
         {
             try
             {
-                Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, UserContext.ProductCounts);
-                Color defaultColor = Color.Black;
-                List<int> rlc = new List<int>();
+                Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, hardNum.ToString());
+                Color defaultColor = Color.Black;               
                 foreach (var boxItem in BoxDict)
                 {
+                    List<int> rlc = new List<int>();
                     LoadHardWareInfo(int.Parse(boxItem.Value) + 1);
                     while (rlc.Count < Grid_Data.Rows.Count)
                     {
@@ -1074,19 +1116,20 @@ namespace ComTestApp
         }
 
         /// <summary>
-        /// 随机检测5~10个
+        /// 随机检测5~8个
         /// </summary>
         private bool RandomAnyOfSend()
         {
             try
             {
-                Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, UserContext.ProductCounts);
+                Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, hardNum.ToString());
                 Color defaultColor = Color.Black;
-                List<int> rlc = new List<int>();
                 foreach (var boxItem in BoxDict)
                 {
+                    List<int> rlc = new List<int>();
                     LoadHardWareInfo(int.Parse(boxItem.Value) + 1);
-                    int cc = new Random().Next(5, 10);
+                    //Thread.Sleep(1200);
+                    int cc = new Random().Next(5, 8);
                     while (rlc.Count < cc)
                     {
                         if (stop)
@@ -1181,6 +1224,7 @@ namespace ComTestApp
             cellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
             Grid_Data.DefaultCellStyle = cellStyle;
         }
+
         #endregion
     }
 }
