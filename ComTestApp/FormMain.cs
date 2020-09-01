@@ -1030,7 +1030,7 @@ namespace ComTestApp
                         //this.BaseEntityHelp().Insert(portEntity);
                         portCount++;
                         if (IsSuc) portSuc++;
-                        UpdateTakeUpInfo(portEntity.BatchNumber, ExtensionHelp.DateDiff(startTime, endTime), portCount.ToString(), (portSuc * 1.0 / portCount * 100).ToString("0.0"));
+                        UpdateTakeUpInfo(portEntity.BatchNumber, ExtensionHelp.DateDiff(startTime, endTime), portCount.ToString(), (portSuc * 1.0 / portCount * 100).ToString("0.000"));
                         item.DefaultCellStyle.BackColor = defaultColor;
                         //IsRead = false;
                     }
@@ -1096,7 +1096,7 @@ namespace ComTestApp
                         //this.BaseEntityHelp().Insert(portEntity);
                         portCount++;
                         if (IsSuc) portSuc++;
-                        UpdateTakeUpInfo(portEntity.BatchNumber, ExtensionHelp.DateDiff(startTime, endTime), portCount.ToString(), (portSuc * 1.0 / portCount * 100).ToString("0.0"));
+                        UpdateTakeUpInfo(portEntity.BatchNumber, ExtensionHelp.DateDiff(startTime, endTime), portCount.ToString(), (portSuc * 1.0 / portCount * 100).ToString("0.000"));
                         Grid_Data.Rows[i].DefaultCellStyle.BackColor = defaultColor;
                         //IsRead = false;
                     }
@@ -1165,7 +1165,7 @@ namespace ComTestApp
                         //this.BaseEntityHelp().Insert(portEntity);
                         portCount++;
                         if (IsSuc) portSuc++;
-                        UpdateTakeUpInfo(portEntity.BatchNumber, ExtensionHelp.DateDiff(startTime, endTime), portCount.ToString(), (portSuc * 1.0 / portCount * 100).ToString("0.0"));
+                        UpdateTakeUpInfo(portEntity.BatchNumber, ExtensionHelp.DateDiff(startTime, endTime), portCount.ToString(), (portSuc * 1.0 / portCount * 100).ToString("0.000"));
                         Grid_Data.Rows[i].DefaultCellStyle.BackColor = defaultColor;
                         //IsRead = false;
                     }
