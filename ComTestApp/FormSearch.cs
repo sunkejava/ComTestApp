@@ -55,13 +55,6 @@ namespace ComTestApp
             pi.SetValue(this.Grid_Data, true, null);
         }
 
-        private void Btn_Clear_Click(object sender, EventArgs e)
-        {
-            Time_Begin.Text = Time_End.Text = Text_BrantchNumber.Text = "";
-            Time_Begin.Value = Time_End.Value = DateTime.Now;
-            Cmb_HardList.SelectedIndex = Cmb_PortList.SelectedIndex = Cmb_Status.SelectedIndex = 0;
-        }
-
         private void FormSearch_Load(object sender, EventArgs e)
         {
             InitColInfo();
@@ -75,7 +68,6 @@ namespace ComTestApp
             {
                 Cmb_PageSize.SelectedIndex = 0;
             }
-
             #region 分页控件位置调整
             Btn_FirstPage.Anchor = Btn_PrevPage.Anchor = Btn_NextPage.Anchor = Btn_EndPage.Anchor = Text_PageNo.Anchor
                 = Btn_Jonp.Anchor = Cmb_PageSize.Anchor = AnchorStyles.None;
@@ -91,9 +83,11 @@ namespace ComTestApp
                 = Btn_Jonp.Anchor = Cmb_PageSize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             #endregion
 
+            Time_End.Value = DateTime.Now;
+            Time_Begin.Value = DateTime.Now.AddDays(30);
             Lb_PageInfo.Text = "共0条记录     0/0";
         }
-
+        
         private void FormSearch_OnPageEdit(int val)
         {
             LoadPageDate();
@@ -275,6 +269,14 @@ namespace ComTestApp
             {
                 e.Handled = true;
             }
+        }
+
+        private void Btn_Clear_Click(object sender, EventArgs e)
+        {
+            Time_Begin.Text = Time_End.Text = Text_BrantchNumber.Text = "";
+            Time_End.Value = DateTime.Now;
+            Time_Begin.Value = DateTime.Now.AddDays(30);
+            Cmb_HardList.SelectedIndex = Cmb_PortList.SelectedIndex = Cmb_Status.SelectedIndex = 0;
         }
     }
 }

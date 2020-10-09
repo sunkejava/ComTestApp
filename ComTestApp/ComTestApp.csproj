@@ -88,6 +88,12 @@
     <Compile Include="ExControl\ExLabel.Designer.cs">
       <DependentUpon>ExLabel.cs</DependentUpon>
     </Compile>
+    <Compile Include="ExControl\PanelEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ExControl\PanelEx.Designer.cs">
+      <DependentUpon>PanelEx.cs</DependentUpon>
+    </Compile>
     <Compile Include="ExControl\RoundLabel.cs">
       <SubType>Component</SubType>
     </Compile>
