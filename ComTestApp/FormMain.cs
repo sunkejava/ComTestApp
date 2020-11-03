@@ -847,7 +847,7 @@ namespace ComTestApp
                     ExLabel lbport = new ExLabel()
                     {
                         Name = "lb_" + hardType + "_" + hardNum + "_" + vtx,
-                        Text = vtx,
+                        Text = vtx.PadLeft(2,'0'),
                         Width = sizeW,
                         Height = sizeW,
                         Radius = sizeW,
@@ -858,7 +858,7 @@ namespace ComTestApp
                         RightToLeft = RightToLeft.No,
                         RoundStyle = RoundStyle.All,
                         Left = colIndex == 0 ? (gbw - sizeW * 4) / 5 * 4 + sizeW * 3 : (gbw - sizeW * 4) / 5 * colIndex + sizeW * (colIndex - 1),
-                        Top = 20 + 2 * (rowIndex + 1) + sizeW * rowIndex,
+                        Top = 15 + 2 * (rowIndex + 1) + sizeW * rowIndex,
                         BaseColor = System.Drawing.SystemColors.AppWorkspace,
                         BackColor = Color.Transparent,
                         TextAlign = ContentAlignment.MiddleLeft
@@ -898,6 +898,15 @@ namespace ComTestApp
             Lb_Msg.DelegateControl(() =>
             {
                 Lb_Msg.Text = string.Format("当前批次【{0}】已检测耗时{1}，共计检测端口{2}个，成功率为{3}%", batchNum, timeStr, portCount, ratioStr);
+                Lb_Msg.Refresh();
+            });
+        }
+
+        private void UpdateTaskeUpInfo(string endStr)
+        {
+            Lb_Msg.DelegateControl(() => 
+            {
+                Lb_Msg.Text = Lb_Msg.Text + "," + endStr;
                 Lb_Msg.Refresh();
             });
         }
@@ -962,15 +971,16 @@ namespace ComTestApp
                                 UpdateAllStyle(tabPage3);
                                 UpdateAllStyle(tabPage4);
                                 break;
-                            case 5:
-                                UpdateAllStyle(tabPage1);
-                                UpdateAllStyle(tabPage2);
-                                UpdateAllStyle(tabPage3);
-                                UpdateAllStyle(tabPage4);
-                                UpdateAllStyle(tabPage5);
-                                break;
                             default:
                                 break;
+                        }
+                        if (hardType.Equals("B2"))
+                        {
+                            UpdateAllStyle(tabPage1);
+                            UpdateAllStyle(tabPage2);
+                            UpdateAllStyle(tabPage3);
+                            UpdateAllStyle(tabPage4);
+                            UpdateAllStyle(tabPage5);
                         }
                         LoadHardWareInfo(1);
                         //CheckAllInfo();
@@ -990,6 +1000,7 @@ namespace ComTestApp
                             Btn_Start.Text = "开始";
                             Btn_Start.Enabled = true;
                         });
+                        UpdateTaskeUpInfo("检测完毕！");
                         break;
                     }
                 }
