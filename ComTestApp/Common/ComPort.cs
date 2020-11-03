@@ -34,6 +34,14 @@ namespace ComTestApp.Common
                 string portName = entity.PortId;
                 var drawerCode = entity.CardId;
                 var drawerCodes = ConstValue.GetDrawerCodeDic(entity.HardType, boxCode); //获取 是 C1 还是 A1
+                if (entity.HardType.Equals("B2"))
+                {
+                    drawerCodes.Clear();
+                    for (int r = 0; r < 5; r++)
+                    {
+                        drawerCodes.Add((r + 1 + (int.Parse(boxCode)) * 5).ToString().PadLeft(2,'0'), (r + 1 + (int.Parse(boxCode)) * 5).ToString().PadLeft(2,'0'));
+                    }
+                }
                 if (null != drawerCodes && drawerCodes.Keys.Any())
                 {
                     foreach (var key in drawerCodes.Keys)
@@ -45,7 +53,7 @@ namespace ComTestApp.Common
                 var sb = new StringBuilder();
                 sb.Append(boxCode);
                 sb.Append(drawerCode);
-                var code = 22 - Convert.ToInt32(portName);
+                var code = entity.HardType.Equals("B2") ? 41 - Convert.ToInt32(portName) : 22 - Convert.ToInt32(portName);
                 sb.Append(code.ToString().Length == 1 ? "0" + code : code.ToString());
                 return ReadCommByUkeyAdd(sb.ToString().Trim(), entity);
             }

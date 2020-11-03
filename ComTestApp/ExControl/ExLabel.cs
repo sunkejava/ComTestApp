@@ -139,7 +139,27 @@ namespace ComTestApp.ExControl
             //    g.InterpolationMode = InterpolationMode.HighQualityBilinear;
             //    g.DrawImage(Image, imageRect, 0, 0, Image.Width, Image.Height, GraphicsUnit.Pixel);
             //}
-            TextRenderer.DrawText(g, Text, Font, new Point(60,55), ForeColor, GetTextFormatFlags(TextAlign, RightToLeft == RightToLeft.No));
+            //TextRenderer.DrawText(g, Text, Font, new Point(60,55), ForeColor, GetTextFormatFlags(TextAlign, RightToLeft == RightToLeft.No));
+            SolidBrush brush = new SolidBrush(this.ForeColor);
+            string text = this.Text;
+            var size = g.MeasureString(text, this.Font);
+            for (int i = 1; i <= text.Length; i++)
+            {
+                if (size.Width / i < this.Width)
+                {
+                    if (text.Length % i == 0)
+                    {
+                        for (int j = 0; j < i; j++)
+                        {
+                            string str = text.Substring(j * text.Length / i, text.Length / i);
+                            var subSize = g.MeasureString(str, this.Font);
+
+                            g.DrawString(str, this.Font, brush, (int)((this.Width - subSize.ToPointF().X) / 2), (int)((this.Height - i * subSize.ToPointF().Y) / 2 + j * subSize.ToPointF().Y));
+                        }
+                        break;
+                    }
+                }
+            }
             g.Flush();
         }
 

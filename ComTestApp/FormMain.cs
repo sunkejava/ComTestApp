@@ -59,7 +59,7 @@ namespace ComTestApp
             {
                 #region 控件初始化
                 InitColInfo();
-                Cmb_HardList.DataSource = new List<string>() { "C1", "A1" };
+                Cmb_HardList.DataSource = new List<string>() { "C1", "A1", "B2" };
                 LoadComInfo();
                 setDataGridStyle();
                 #endregion
@@ -218,7 +218,7 @@ namespace ComTestApp
             {
                 hardType = Cmb_HardList.SelectedValue.ToString();
                 Text_Number.Enabled = hardType.Equals("A1");
-                Text_Number.ReadOnly = hardType.Equals("C1");
+                Text_Number.ReadOnly = !hardType.Equals("A1");
                 hardNum = (int)Text_Number.Value;//ConstValue.GetBoxCodesDic(hardType, hardNum.ToString()).Count;
                 if (appConfig != null) appConfig.hardNum = hardNum;
                 InitHardView();
@@ -430,6 +430,10 @@ namespace ComTestApp
                 var portId = seletxt.Substring(4, 2);
                 var ban = int.Parse(banCode) % 3;
                 var banStr = ban == 1 ? "下层" : ban == 2 ? "中层" : "上层";
+                if (hardType.Equals("B2"))
+                {
+                    banStr = "板" + ban;
+                }
                 Lb_Msg.DelegateControl(() =>
                 {
                     Lb_Msg.Text = string.Format("正在检测箱子{0}板子{1}的端口{2}是否正常,请稍后！", boxCode, banCode, portId);
@@ -526,6 +530,9 @@ namespace ComTestApp
                 case 4:
                     tp = tabPage4;
                     break;
+                case 5:
+                    tp = tabPage5;
+                    break;
                 default:
                     break;
             }
@@ -533,6 +540,13 @@ namespace ComTestApp
             if (SerialPortName.IsEmpty() && Cmb_PortList.Items.Count > 0) SerialPortName = Cmb_PortList.Text;
             //设备箱体
             Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, hardNum.ToString());
+            if (hardType.Equals("B2"))
+            {
+                BoxDict.Add("01", "01");
+                BoxDict.Add("02", "02");
+                BoxDict.Add("03", "03");
+                BoxDict.Add("04", "04");
+            }
             string boxValue = "";
             foreach (var item in BoxDict)
             {
@@ -540,13 +554,29 @@ namespace ComTestApp
                 if (item.Key.Equals(val))
                 {
                     boxValue = item.Value;
+                    break;
                 }
             }
             //抽屉层级
             Dictionary<string, string> CardDict = ConstValue.GetDrawerCodeDic(hardType, boxValue);
+            if (hardType.Equals("B2"))
+            {
+                CardDict.Clear();
+                for (int r = 0; r < 5; r++)
+                {
+                    CardDict.Add(AppedNumber(r + 1 + (boxNum - 1) * 5), AppedNumber(r + 1 + (boxNum - 1) * 5));
+                }              
+            }
             CardDict = CardDict.OrderBy(p => p.Key).ToDictionary(p => p.Key,o => o.Value);  
             //接口信息
             Dictionary<string, string> UsbPortDict = ConstValue.GetPortCodeDic(hardType);
+            if (hardType.Equals("B2"))
+            {
+                for (int j = 21; j <= 40; j++)
+                {
+                    UsbPortDict.Add(AppedNumber(j), AppedNumber(j));
+                }
+            }
             List<UsbPortEntity> portEntitys = new List<UsbPortEntity>();
             int i = 1;
             List<string> codeStrs = new List<string>();
@@ -609,7 +639,7 @@ namespace ComTestApp
         private void InitHardView()
         {
             clearControl();
-            tabPage2.Parent = tabPage3.Parent = tabPage4.Parent = null;
+            tabPage2.Parent = tabPage3.Parent = tabPage4.Parent = tabPage5.Parent = null;
             if (hardType.Equals("A1"))
             {
                 switch (hardNum)
@@ -620,26 +650,26 @@ namespace ComTestApp
                         break;
                     case 2:
                         tabPage2.Parent = tabPage1.Parent;
-                        tabPage1.Controls.Add( GenerateControl(1));
-                        tabPage2.Controls.Add( GenerateControl(2));
+                        tabPage1.Controls.Add(GenerateControl(1));
+                        tabPage2.Controls.Add(GenerateControl(2));
                         tabPage1.Text = hardType + "设备1信息";
                         tabPage2.Text = hardType + "设备2信息";
                         break;
                     case 3:
-                        tabPage3.Parent =  tabPage2.Parent = tabPage1.Parent;
-                        tabPage1.Controls.Add( GenerateControl(1));
-                        tabPage2.Controls.Add( GenerateControl(2));
-                        tabPage3.Controls.Add( GenerateControl(3));
+                        tabPage3.Parent = tabPage2.Parent = tabPage1.Parent;
+                        tabPage1.Controls.Add(GenerateControl(1));
+                        tabPage2.Controls.Add(GenerateControl(2));
+                        tabPage3.Controls.Add(GenerateControl(3));
                         tabPage1.Text = hardType + "设备1信息";
                         tabPage2.Text = hardType + "设备2信息";
                         tabPage3.Text = hardType + "设备3信息";
                         break;
                     case 4:
                         tabPage4.Parent = tabPage3.Parent = tabPage2.Parent = tabPage1.Parent;
-                        tabPage1.Controls.Add( GenerateControl(1));
-                        tabPage2.Controls.Add( GenerateControl(2));
-                        tabPage3.Controls.Add( GenerateControl(3));
-                        tabPage4.Controls.Add( GenerateControl(4));
+                        tabPage1.Controls.Add(GenerateControl(1));
+                        tabPage2.Controls.Add(GenerateControl(2));
+                        tabPage3.Controls.Add(GenerateControl(3));
+                        tabPage4.Controls.Add(GenerateControl(4));
                         tabPage1.Text = hardType + "设备1信息";
                         tabPage2.Text = hardType + "设备2信息";
                         tabPage3.Text = hardType + "设备3信息";
@@ -649,10 +679,24 @@ namespace ComTestApp
                         break;
                 }
             }
+            else if (hardType.Equals("B2"))
+            {
+                tabPage5.Parent = tabPage4.Parent = tabPage3.Parent = tabPage2.Parent = tabPage1.Parent;
+                tabPage1.Controls.Add(GenerateBControl(1));
+                tabPage2.Controls.Add(GenerateBControl(2));
+                tabPage3.Controls.Add(GenerateBControl(3));
+                tabPage4.Controls.Add(GenerateBControl(4));
+                tabPage5.Controls.Add(GenerateBControl(5));
+                tabPage1.Text = hardType + "抽屉1信息";
+                tabPage2.Text = hardType + "抽屉2信息";
+                tabPage3.Text = hardType + "抽屉3信息";
+                tabPage4.Text = hardType + "抽屉4信息";
+                tabPage5.Text = hardType + "抽屉5信息";
+            }
             else
             {
                 tabPage1.Text = hardType + "设备信息";
-                tabPage1.Controls.Add( GenerateControl());
+                tabPage1.Controls.Add(GenerateControl());
             }
             Lb_Msg.DelegateControl(() => {
                 Lb_Msg.Text = string.Format("当前批次【{0}】已检测耗时{1}，共计检测端口{2}个，成功率为{3}%", "xxx", "xx秒", "xxx", "xx");
@@ -686,6 +730,12 @@ namespace ComTestApp
             {
                 tabPage4.Controls.Remove(ctrl4);
                 tabPage4.Invalidate();
+            }
+            var ctrl5 = tabPage5.Controls.OfType<Control>().Where(o => o.Name.Contains("PanelMain_")).FirstOrDefault();
+            if (ctrl5 != null)
+            {
+                tabPage5.Controls.Remove(ctrl5);
+                tabPage5.Invalidate();
             }
         }
 
@@ -743,6 +793,84 @@ namespace ComTestApp
                 gropBox.Controls.Add(lbport);
                 }
                 return gropBox;
+        }
+
+        /// <summary>
+        /// 创建B2设备的控件
+        /// </summary>
+        /// <param name="hardNum"></param>
+        /// <returns></returns>
+        private Panel GenerateBControl(int hardNum = 1)
+        {
+            Lb_Msg.DelegateControl(() =>
+            {
+                Lb_Msg.Text = "创建设备{" + hardNum + "}控件中，请稍后......";
+                Lb_Msg.Refresh();
+            });
+
+            //创建承载控件GroupBox
+            Panel panelBox = new Panel()
+            {
+                Name = "PanelMain_" + DateTime.Now.ToString("yyyyMMddHHmmssfff"),
+                Text = hardType + "设备端口显示",
+                Width = tabPage1.Width - 10,
+                Height = tabPage1.Height - 10,
+                Left = 5,
+                Top = 5
+            };
+
+            #region 生成GroupBox组合 固定5组
+            var rgw = 15;//每个groupbox间隔
+            var gbw = (tabPage1.Width - 10 - (rgw * 6)) / 5;
+            var gbh = tabPage1.Height - 10;
+            for (int i = 0; i < 5; i++)
+            {
+                //创建GroupBox 
+                GroupBox groupBox = new GroupBox()
+                {
+                    Name = "GroupBox_" + hardType + "_" + hardNum + "_" + (i + 1),
+                    Text = "板" + (i + 1),
+                    Width = gbw,
+                    Height = gbh,
+                    Left = rgw * (i+1) + gbw * i,
+                    Top = 5
+                };
+                //创建端口控件,每个box中包含40个，共计2列20行，从下到上为1~20，21~40
+                for (int j = 0; j < 40; j++)
+                {
+                    int colIndex = (j + 1) % 4;//1标识第一列，0标识第二列
+                    int rowIndex = colIndex > 0 ? ((j + 1) - colIndex) / 4 : ((j + 1) / 4) - 1;
+                    Console.WriteLine(string.Format("数字{0}的列为{1}行为{2}", j, colIndex, rowIndex));
+                    //Console.WriteLine(colIndex == 1 ? (20 - rowIndex).ToString() : (40 - rowIndex).ToString());
+                    int sizeW = (gbh - 20 - 9 * 2) / 10;
+                    string vtx = colIndex == 1 ? (10 - rowIndex).ToString() : colIndex == 2 ? (20 - rowIndex).ToString() : colIndex == 3 ? (30 - rowIndex).ToString() : (40 - rowIndex).ToString();
+                    ExLabel lbport = new ExLabel()
+                    {
+                        Name = "lb_" + hardType + "_" + hardNum + "_" + vtx,
+                        Text = vtx,
+                        Width = sizeW,
+                        Height = sizeW,
+                        Radius = sizeW,
+                        Font = new System.Drawing.Font("微软雅黑", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134))),
+                        UseMnemonic = false,
+                        //FlatStyle = FlatStyle.Flat,
+                        ControlState = ControlState.Normal,
+                        RightToLeft = RightToLeft.No,
+                        RoundStyle = RoundStyle.All,
+                        Left = colIndex == 0 ? (gbw - sizeW * 4) / 5 * 4 + sizeW * 3 : (gbw - sizeW * 4) / 5 * colIndex + sizeW * (colIndex - 1),
+                        Top = 20 + 2 * (rowIndex + 1) + sizeW * rowIndex,
+                        BaseColor = System.Drawing.SystemColors.AppWorkspace,
+                        BackColor = Color.Transparent,
+                        TextAlign = ContentAlignment.MiddleLeft
+                    };
+                    //Console.WriteLine($"控件大小为:{lbport.Size}");
+                    //Console.WriteLine(string.Format("控件{0}的左边距为{1}上边距为{2}", lbport.Name, lbport.Left, lbport.Top));
+                    groupBox.Controls.Add(lbport);
+                }
+                panelBox.Controls.Add(groupBox);
+            }
+            #endregion
+            return panelBox;
         }
 
         private string AppedNumber(int n)
@@ -834,6 +962,13 @@ namespace ComTestApp
                                 UpdateAllStyle(tabPage3);
                                 UpdateAllStyle(tabPage4);
                                 break;
+                            case 5:
+                                UpdateAllStyle(tabPage1);
+                                UpdateAllStyle(tabPage2);
+                                UpdateAllStyle(tabPage3);
+                                UpdateAllStyle(tabPage4);
+                                UpdateAllStyle(tabPage5);
+                                break;
                             default:
                                 break;
                         }
@@ -902,6 +1037,9 @@ namespace ComTestApp
                 case 3:
                     tp = tabPage4;
                     break;
+                case 4:
+                    tp = tabPage5;
+                    break;
                 default:
                     break;
             }
@@ -912,8 +1050,14 @@ namespace ComTestApp
                 {
                     int cId = int.Parse(entity.CardId) % 3;
                     cId = cId == 0 ? 3 : cId;
-                    string cardId = (4-cId).ToString();
+                    string cardId = (4 - cId).ToString();
                     ct = tp.Controls[0].Controls.OfType<Control>().Where(o => o.Name.Split('_')[1].Equals(entity.HardType) && o.Name.Split('_')[2].Equals((int.Parse(entity.BoxId) + 1).ToString()) && o.Name.Split('_')[3].Equals(int.Parse(entity.PortId).ToString()) && o.Name.Split('_')[4].Equals(cardId)).FirstOrDefault() as ExLabel;
+                } else if (hardType.Equals("B2")) 
+                {
+                    int bId = int.Parse(entity.CardId) % 5;
+                    string bIdStr = bId == 0 ? "5" : bId.ToString();                    
+                    ct = tp.Controls[0].Controls.OfType<Control>().Where(o => o.Name.Split('_')[3].Equals(bIdStr)).FirstOrDefault().Controls.OfType<Control>().
+                        Where(o => o.Name.Split('_')[3].Equals(int.Parse(entity.PortId).ToString())).FirstOrDefault() as ExLabel;
                 }
                 else
                 {
@@ -967,15 +1111,35 @@ namespace ComTestApp
                 {
                     foreach (Control citem in (item as Panel).Controls)
                     {
-                        if (citem.Name.Contains("lb_") && citem.Text.Contains("端口"))
+                        if (hardType.Equals("B2"))
                         {
-                            if (citem is ExLabel)
+                            foreach (Control eitem in (citem as GroupBox).Controls)
                             {
-                                ((ExLabel)citem).BaseColor = System.Drawing.SystemColors.AppWorkspace;
+                                if (eitem.Name.Contains("lb_") && citem.Text.Contains("端口"))
+                                {
+                                    if (eitem is ExLabel)
+                                    {
+                                        ((ExLabel)eitem).BaseColor = System.Drawing.SystemColors.AppWorkspace;
+                                    }
+                                    else
+                                    {
+                                        eitem.BackColor = System.Drawing.SystemColors.AppWorkspace;
+                                    }
+                                }
                             }
-                            else
+                        }
+                        else 
+                        {
+                            if (citem.Name.Contains("lb_") && citem.Text.Contains("端口"))
                             {
-                                citem.BackColor = System.Drawing.SystemColors.AppWorkspace;
+                                if (citem is ExLabel)
+                                {
+                                    ((ExLabel)citem).BaseColor = System.Drawing.SystemColors.AppWorkspace;
+                                }
+                                else
+                                {
+                                    citem.BackColor = System.Drawing.SystemColors.AppWorkspace;
+                                }
                             }
                         }
                     }
@@ -993,6 +1157,13 @@ namespace ComTestApp
             {
                 //设备箱体
                 Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, hardNum.ToString());
+                if (hardType.Equals("B2"))
+                {
+                    BoxDict.Add("01", "01");
+                    BoxDict.Add("02", "02");
+                    BoxDict.Add("03", "03");
+                    BoxDict.Add("04", "04");
+                }
                 Color defaultColor = Color.Black;
                 foreach (var boxItem in BoxDict)
                 {
@@ -1056,6 +1227,13 @@ namespace ComTestApp
             try
             {
                 Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, hardNum.ToString());
+                if (hardType.Equals("B2"))
+                {
+                    BoxDict.Add("01", "01");
+                    BoxDict.Add("02", "02");
+                    BoxDict.Add("03", "03");
+                    BoxDict.Add("04", "04");
+                }
                 Color defaultColor = Color.Black;               
                 foreach (var boxItem in BoxDict)
                 {
@@ -1123,13 +1301,20 @@ namespace ComTestApp
             try
             {
                 Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, hardNum.ToString());
+                if (hardType.Equals("B2"))
+                {
+                    BoxDict.Add("01", "01");
+                    BoxDict.Add("02", "02");
+                    BoxDict.Add("03", "03");
+                    BoxDict.Add("04", "04");
+                }
                 Color defaultColor = Color.Black;
                 foreach (var boxItem in BoxDict)
                 {
                     List<int> rlc = new List<int>();
                     LoadHardWareInfo(int.Parse(boxItem.Value) + 1);
                     //Thread.Sleep(1200);
-                    int cc = new Random().Next(5, 8);
+                    int cc = hardType.Equals("B2") ? new Random().Next(20, 32) : new Random().Next(5, 8);
                     while (rlc.Count < cc)
                     {
                         if (stop)
