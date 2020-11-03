@@ -83,8 +83,8 @@ namespace ComTestApp
                 = Btn_Jonp.Anchor = Cmb_PageSize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             #endregion
 
-            Time_End.Value = DateTime.Now;
-            Time_Begin.Value = DateTime.Now.AddDays(30);
+            Time_End.Value = DateTime.Today;
+            Time_Begin.Value = DateTime.Today.AddDays(-30);
             Lb_PageInfo.Text = "共0条记录     0/0";
         }
         
@@ -274,8 +274,8 @@ namespace ComTestApp
         private void Btn_Clear_Click(object sender, EventArgs e)
         {
             Time_Begin.Text = Time_End.Text = Text_BrantchNumber.Text = "";
-            Time_End.Value = DateTime.Now;
-            Time_Begin.Value = DateTime.Now.AddDays(30);
+            Time_End.Value = DateTime.Today;
+            Time_Begin.Value = DateTime.Today.AddDays(-30);
             Cmb_HardList.SelectedIndex = Cmb_PortList.SelectedIndex = Cmb_Status.SelectedIndex = 0;
         }
     }

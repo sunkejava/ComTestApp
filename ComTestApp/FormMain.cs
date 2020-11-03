@@ -840,7 +840,7 @@ namespace ComTestApp
                 {
                     int colIndex = (j + 1) % 4;//1标识第一列，0标识第二列
                     int rowIndex = colIndex > 0 ? ((j + 1) - colIndex) / 4 : ((j + 1) / 4) - 1;
-                    Console.WriteLine(string.Format("数字{0}的列为{1}行为{2}", j, colIndex, rowIndex));
+                    //Console.WriteLine(string.Format("数字{0}的列为{1}行为{2}", j, colIndex, rowIndex));
                     //Console.WriteLine(colIndex == 1 ? (20 - rowIndex).ToString() : (40 - rowIndex).ToString());
                     int sizeW = (gbh - 20 - 9 * 2) / 10;
                     string vtx = colIndex == 1 ? (10 - rowIndex).ToString() : colIndex == 2 ? (20 - rowIndex).ToString() : colIndex == 3 ? (30 - rowIndex).ToString() : (40 - rowIndex).ToString();
