@@ -53,7 +53,7 @@ namespace ComTestApp.Common
                 var sb = new StringBuilder();
                 sb.Append(boxCode);
                 sb.Append(drawerCode);
-                var code = entity.HardType.Equals("B2") ? 41 - Convert.ToInt32(portName) : 22 - Convert.ToInt32(portName);
+                var code = entity.HardType.Equals("B2") ? Convert.ToInt32(portName) : 22 - Convert.ToInt32(portName);
                 sb.Append(code.ToString().Length == 1 ? "0" + code : code.ToString());
                 return ReadCommByUkeyAdd(sb.ToString().Trim(), entity);
             }
@@ -67,7 +67,7 @@ namespace ComTestApp.Common
             }
         }
 
-        private bool ReadCommByUkeyAdd(string ukeyadd, UsbPortEntity pe)
+        public bool ReadCommByUkeyAdd(string ukeyadd, UsbPortEntity pe)
         {
             try
             {

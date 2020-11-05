@@ -56,10 +56,18 @@
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
             this.Panel_Bottom = new System.Windows.Forms.Panel();
             this.Group_DriveInfo = new System.Windows.Forms.GroupBox();
             this.Grid_Data = new System.Windows.Forms.DataGridView();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.tabPage7 = new System.Windows.Forms.TabPage();
+            this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.tabPage9 = new System.Windows.Forms.TabPage();
+            this.tabPage10 = new System.Windows.Forms.TabPage();
+            this.Btn_Revit = new System.Windows.Forms.Button();
+            this.Cmb_StartPort = new System.Windows.Forms.ComboBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.Panel_Top.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Num_Waiting)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Text_Number)).BeginInit();
@@ -73,6 +81,8 @@
             // 
             // Panel_Top
             // 
+            this.Panel_Top.Controls.Add(this.Cmb_StartPort);
+            this.Panel_Top.Controls.Add(this.Btn_Revit);
             this.Panel_Top.Controls.Add(this.Btn_Send);
             this.Panel_Top.Controls.Add(this.Cmb_Listcod);
             this.Panel_Top.Controls.Add(this.Btn_search);
@@ -91,19 +101,20 @@
             this.Panel_Top.Controls.Add(this.Cmb_PortList);
             this.Panel_Top.Controls.Add(this.label1);
             this.Panel_Top.Controls.Add(this.Btn_LoadComPort);
+            this.Panel_Top.Controls.Add(this.label7);
             this.Panel_Top.Dock = System.Windows.Forms.DockStyle.Top;
             this.Panel_Top.Location = new System.Drawing.Point(0, 0);
             this.Panel_Top.Name = "Panel_Top";
-            this.Panel_Top.Size = new System.Drawing.Size(1924, 52);
+            this.Panel_Top.Size = new System.Drawing.Size(1924, 92);
             this.Panel_Top.TabIndex = 0;
             // 
             // Btn_Send
             // 
             this.Btn_Send.BackColor = System.Drawing.SystemColors.Control;
             this.Btn_Send.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Btn_Send.Location = new System.Drawing.Point(1416, 3);
+            this.Btn_Send.Location = new System.Drawing.Point(159, 54);
             this.Btn_Send.Name = "Btn_Send";
-            this.Btn_Send.Size = new System.Drawing.Size(62, 46);
+            this.Btn_Send.Size = new System.Drawing.Size(62, 31);
             this.Btn_Send.TabIndex = 48;
             this.Btn_Send.Text = "发送";
             this.Btn_Send.UseVisualStyleBackColor = false;
@@ -115,7 +126,7 @@
             this.Cmb_Listcod.FormattingEnabled = true;
             this.Cmb_Listcod.Items.AddRange(new object[] {
             "指定端口测试"});
-            this.Cmb_Listcod.Location = new System.Drawing.Point(1268, 9);
+            this.Cmb_Listcod.Location = new System.Drawing.Point(13, 54);
             this.Cmb_Listcod.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Cmb_Listcod.Name = "Cmb_Listcod";
             this.Cmb_Listcod.Size = new System.Drawing.Size(136, 31);
@@ -142,7 +153,7 @@
             0,
             0,
             0});
-            this.Num_Waiting.Location = new System.Drawing.Point(1145, 10);
+            this.Num_Waiting.Location = new System.Drawing.Point(286, 56);
             this.Num_Waiting.Maximum = new decimal(new int[] {
             20000,
             0,
@@ -167,7 +178,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label6.Location = new System.Drawing.Point(1096, 14);
+            this.label6.Location = new System.Drawing.Point(239, 58);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(61, 23);
             this.label6.TabIndex = 43;
@@ -206,9 +217,8 @@
             this.Cmb_CheckModel.FormattingEnabled = true;
             this.Cmb_CheckModel.Items.AddRange(new object[] {
             "顺序",
-            "随机",
-            "冒烟"});
-            this.Cmb_CheckModel.Location = new System.Drawing.Point(939, 11);
+            "随机"});
+            this.Cmb_CheckModel.Location = new System.Drawing.Point(1107, 12);
             this.Cmb_CheckModel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Cmb_CheckModel.Name = "Cmb_CheckModel";
             this.Cmb_CheckModel.Size = new System.Drawing.Size(121, 31);
@@ -219,7 +229,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label5.Location = new System.Drawing.Point(858, 14);
+            this.label5.Location = new System.Drawing.Point(1026, 15);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(95, 23);
             this.label5.TabIndex = 39;
@@ -233,7 +243,7 @@
             this.Cmb_CheckNum.Items.AddRange(new object[] {
             "单次",
             "连续"});
-            this.Cmb_CheckNum.Location = new System.Drawing.Point(703, 10);
+            this.Cmb_CheckNum.Location = new System.Drawing.Point(871, 11);
             this.Cmb_CheckNum.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Cmb_CheckNum.Name = "Cmb_CheckNum";
             this.Cmb_CheckNum.Size = new System.Drawing.Size(121, 31);
@@ -244,7 +254,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label4.Location = new System.Drawing.Point(617, 13);
+            this.label4.Location = new System.Drawing.Point(785, 14);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(95, 23);
             this.label4.TabIndex = 37;
@@ -254,7 +264,7 @@
             // 
             this.Text_Number.Enabled = false;
             this.Text_Number.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Text_Number.Location = new System.Drawing.Point(523, 10);
+            this.Text_Number.Location = new System.Drawing.Point(691, 11);
             this.Text_Number.Maximum = new decimal(new int[] {
             4,
             0,
@@ -280,7 +290,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label3.Location = new System.Drawing.Point(474, 13);
+            this.label3.Location = new System.Drawing.Point(642, 14);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(61, 23);
             this.label3.TabIndex = 34;
@@ -291,7 +301,7 @@
             this.Cmb_HardList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.Cmb_HardList.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Cmb_HardList.FormattingEnabled = true;
-            this.Cmb_HardList.Location = new System.Drawing.Point(325, 10);
+            this.Cmb_HardList.Location = new System.Drawing.Point(493, 11);
             this.Cmb_HardList.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Cmb_HardList.Name = "Cmb_HardList";
             this.Cmb_HardList.Size = new System.Drawing.Size(121, 31);
@@ -302,7 +312,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label2.Location = new System.Drawing.Point(239, 14);
+            this.label2.Location = new System.Drawing.Point(407, 15);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(95, 23);
             this.label2.TabIndex = 32;
@@ -313,7 +323,7 @@
             this.Cmb_PortList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.Cmb_PortList.Font = new System.Drawing.Font("微软雅黑", 10F);
             this.Cmb_PortList.FormattingEnabled = true;
-            this.Cmb_PortList.Location = new System.Drawing.Point(84, 11);
+            this.Cmb_PortList.Location = new System.Drawing.Point(84, 9);
             this.Cmb_PortList.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Cmb_PortList.Name = "Cmb_PortList";
             this.Cmb_PortList.Size = new System.Drawing.Size(136, 31);
@@ -324,7 +334,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("微软雅黑", 10F);
-            this.label1.Location = new System.Drawing.Point(8, 13);
+            this.label1.Location = new System.Drawing.Point(8, 12);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(73, 23);
             this.label1.TabIndex = 19;
@@ -332,10 +342,9 @@
             // 
             // Btn_LoadComPort
             // 
-            this.Btn_LoadComPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.Btn_LoadComPort.BackColor = System.Drawing.SystemColors.Control;
             this.Btn_LoadComPort.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.Btn_LoadComPort.Location = new System.Drawing.Point(1403, 3);
+            this.Btn_LoadComPort.Location = new System.Drawing.Point(243, 3);
             this.Btn_LoadComPort.Name = "Btn_LoadComPort";
             this.Btn_LoadComPort.Size = new System.Drawing.Size(131, 46);
             this.Btn_LoadComPort.TabIndex = 45;
@@ -347,7 +356,7 @@
             // 
             this.Panel_Midel.Controls.Add(this.Lb_Msg);
             this.Panel_Midel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.Panel_Midel.Location = new System.Drawing.Point(0, 52);
+            this.Panel_Midel.Location = new System.Drawing.Point(0, 92);
             this.Panel_Midel.Name = "Panel_Midel";
             this.Panel_Midel.Size = new System.Drawing.Size(1924, 68);
             this.Panel_Midel.TabIndex = 1;
@@ -368,7 +377,7 @@
             // 
             this.Panel_View.Controls.Add(this.tabControl1);
             this.Panel_View.Dock = System.Windows.Forms.DockStyle.Top;
-            this.Panel_View.Location = new System.Drawing.Point(0, 120);
+            this.Panel_View.Location = new System.Drawing.Point(0, 160);
             this.Panel_View.Name = "Panel_View";
             this.Panel_View.Size = new System.Drawing.Size(1924, 581);
             this.Panel_View.TabIndex = 2;
@@ -380,6 +389,11 @@
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Controls.Add(this.tabPage5);
+            this.tabControl1.Controls.Add(this.tabPage6);
+            this.tabControl1.Controls.Add(this.tabPage7);
+            this.tabControl1.Controls.Add(this.tabPage8);
+            this.tabControl1.Controls.Add(this.tabPage9);
+            this.tabControl1.Controls.Add(this.tabPage10);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
@@ -395,7 +409,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 32);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(1916, 415);
+            this.tabPage1.Size = new System.Drawing.Size(1916, 545);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "设备1";
             // 
@@ -404,7 +418,7 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 32);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(1916, 415);
+            this.tabPage2.Size = new System.Drawing.Size(1916, 545);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "设备2";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -413,7 +427,8 @@
             // 
             this.tabPage3.Location = new System.Drawing.Point(4, 32);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(1916, 415);
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(1916, 545);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "设备3";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -422,18 +437,29 @@
             // 
             this.tabPage4.Location = new System.Drawing.Point(4, 32);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(1916, 415);
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(1916, 545);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "设备4";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.Location = new System.Drawing.Point(4, 32);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage5.Size = new System.Drawing.Size(1916, 545);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "设备5";
+            this.tabPage5.UseVisualStyleBackColor = true;
             // 
             // Panel_Bottom
             // 
             this.Panel_Bottom.Controls.Add(this.Group_DriveInfo);
             this.Panel_Bottom.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Panel_Bottom.Location = new System.Drawing.Point(0, 701);
+            this.Panel_Bottom.Location = new System.Drawing.Point(0, 741);
             this.Panel_Bottom.Name = "Panel_Bottom";
-            this.Panel_Bottom.Size = new System.Drawing.Size(1924, 131);
+            this.Panel_Bottom.Size = new System.Drawing.Size(1924, 91);
             this.Panel_Bottom.TabIndex = 3;
             // 
             // Group_DriveInfo
@@ -443,7 +469,7 @@
             this.Group_DriveInfo.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Group_DriveInfo.Location = new System.Drawing.Point(0, 0);
             this.Group_DriveInfo.Name = "Group_DriveInfo";
-            this.Group_DriveInfo.Size = new System.Drawing.Size(1924, 131);
+            this.Group_DriveInfo.Size = new System.Drawing.Size(1924, 91);
             this.Group_DriveInfo.TabIndex = 2;
             this.Group_DriveInfo.TabStop = false;
             this.Group_DriveInfo.Text = "设备数据";
@@ -463,18 +489,94 @@
             this.Grid_Data.ReadOnly = true;
             this.Grid_Data.RowHeadersWidth = 51;
             this.Grid_Data.RowTemplate.Height = 23;
-            this.Grid_Data.Size = new System.Drawing.Size(1918, 103);
+            this.Grid_Data.Size = new System.Drawing.Size(1918, 63);
             this.Grid_Data.TabIndex = 13;
             // 
-            // tabPage5
+            // tabPage6
             // 
-            this.tabPage5.Location = new System.Drawing.Point(4, 32);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(1916, 545);
-            this.tabPage5.TabIndex = 4;
-            this.tabPage5.Text = "设备5";
-            this.tabPage5.UseVisualStyleBackColor = true;
+            this.tabPage6.Location = new System.Drawing.Point(4, 32);
+            this.tabPage6.Name = "tabPage6";
+            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage6.Size = new System.Drawing.Size(1916, 545);
+            this.tabPage6.TabIndex = 5;
+            this.tabPage6.Text = "设备6";
+            this.tabPage6.UseVisualStyleBackColor = true;
+            // 
+            // tabPage7
+            // 
+            this.tabPage7.Location = new System.Drawing.Point(4, 32);
+            this.tabPage7.Name = "tabPage7";
+            this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage7.Size = new System.Drawing.Size(1916, 545);
+            this.tabPage7.TabIndex = 6;
+            this.tabPage7.Text = "设备7";
+            this.tabPage7.UseVisualStyleBackColor = true;
+            // 
+            // tabPage8
+            // 
+            this.tabPage8.Location = new System.Drawing.Point(4, 32);
+            this.tabPage8.Name = "tabPage8";
+            this.tabPage8.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage8.Size = new System.Drawing.Size(1916, 545);
+            this.tabPage8.TabIndex = 7;
+            this.tabPage8.Text = "设备8";
+            this.tabPage8.UseVisualStyleBackColor = true;
+            // 
+            // tabPage9
+            // 
+            this.tabPage9.Location = new System.Drawing.Point(4, 32);
+            this.tabPage9.Name = "tabPage9";
+            this.tabPage9.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage9.Size = new System.Drawing.Size(1916, 545);
+            this.tabPage9.TabIndex = 8;
+            this.tabPage9.Text = "设备9";
+            this.tabPage9.UseVisualStyleBackColor = true;
+            // 
+            // tabPage10
+            // 
+            this.tabPage10.Location = new System.Drawing.Point(4, 32);
+            this.tabPage10.Name = "tabPage10";
+            this.tabPage10.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage10.Size = new System.Drawing.Size(1916, 545);
+            this.tabPage10.TabIndex = 9;
+            this.tabPage10.Text = "设备10";
+            this.tabPage10.UseVisualStyleBackColor = true;
+            // 
+            // Btn_Revit
+            // 
+            this.Btn_Revit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.Btn_Revit.BackColor = System.Drawing.SystemColors.Control;
+            this.Btn_Revit.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Btn_Revit.Location = new System.Drawing.Point(1415, 3);
+            this.Btn_Revit.Name = "Btn_Revit";
+            this.Btn_Revit.Size = new System.Drawing.Size(116, 46);
+            this.Btn_Revit.TabIndex = 49;
+            this.Btn_Revit.Text = "复位";
+            this.Btn_Revit.UseVisualStyleBackColor = false;
+            this.Btn_Revit.Click += new System.EventHandler(this.Btn_Revit_Click);
+            // 
+            // Cmb_StartPort
+            // 
+            this.Cmb_StartPort.Font = new System.Drawing.Font("微软雅黑", 10F);
+            this.Cmb_StartPort.FormattingEnabled = true;
+            this.Cmb_StartPort.Items.AddRange(new object[] {
+            "指定端口测试"});
+            this.Cmb_StartPort.Location = new System.Drawing.Point(493, 54);
+            this.Cmb_StartPort.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Cmb_StartPort.Name = "Cmb_StartPort";
+            this.Cmb_StartPort.Size = new System.Drawing.Size(136, 31);
+            this.Cmb_StartPort.TabIndex = 50;
+            this.Cmb_StartPort.SelectedIndexChanged += new System.EventHandler(this.Cmb_StartPort_SelectedIndexChanged);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label7.Location = new System.Drawing.Point(407, 58);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(95, 23);
+            this.label7.TabIndex = 51;
+            this.label7.Text = "起始端口：";
             // 
             // FormMain
             // 
@@ -490,7 +592,7 @@
             this.MaximizeBox = false;
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "鲸鱼池硬件检测工具V1.0";
+            this.Text = "鲸鱼池硬件检测工具V2.0";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
@@ -542,6 +644,14 @@
         private System.Windows.Forms.ComboBox Cmb_Listcod;
         private System.Windows.Forms.Button Btn_Send;
         private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.TabPage tabPage6;
+        private System.Windows.Forms.TabPage tabPage7;
+        private System.Windows.Forms.TabPage tabPage8;
+        private System.Windows.Forms.TabPage tabPage9;
+        private System.Windows.Forms.TabPage tabPage10;
+        private System.Windows.Forms.Button Btn_Revit;
+        private System.Windows.Forms.ComboBox Cmb_StartPort;
+        private System.Windows.Forms.Label label7;
     }
 }
 

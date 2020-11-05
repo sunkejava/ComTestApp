@@ -46,6 +46,10 @@ namespace ComTestApp
         DateTime startTime,endTime;//开始时间、结束时间
         int portCount = 0, portSuc = 0;//总端口数及成功端口数
         volatile bool stop = false;//是否停止
+        /// <summary>
+        /// 开始检测端口位置
+        /// </summary>
+        string startPortStr = "000000";
         //bool IsRead = false;//是否读取
         AppConfig appConfig = null;
         ComPort comport = new ComPort(3500);
@@ -114,6 +118,7 @@ namespace ComTestApp
                 e.Cancel = true;
                 return;
             }
+            BatchSaveData();
             this.Dispose();
         }
 
@@ -217,8 +222,19 @@ namespace ComTestApp
             if (Cmb_PortList != null && Cmb_PortList.SelectedValue != null)
             {
                 hardType = Cmb_HardList.SelectedValue.ToString();
-                Text_Number.Enabled = hardType.Equals("A1");
-                Text_Number.ReadOnly = !hardType.Equals("A1");
+                Text_Number.Enabled = hardType.Equals("A1") || hardType.Equals("B2");
+                Text_Number.ReadOnly = !hardType.Equals("A1") && !hardType.Equals("B2");
+                if (hardType.Equals("A1"))
+                {
+                    Text_Number.Maximum = 4;
+                    Text_Number.Minimum = 1;
+                }
+                if (hardType.Equals("B2"))
+                {
+                    if (hardNum > 2) { hardNum = 1;Text_Number.Value = 1.0m; }
+                    Text_Number.Maximum = 2;
+                    Text_Number.Minimum = 1;
+                }
                 hardNum = (int)Text_Number.Value;//ConstValue.GetBoxCodesDic(hardType, hardNum.ToString()).Count;
                 if (appConfig != null) appConfig.hardNum = hardNum;
                 InitHardView();
@@ -322,23 +338,6 @@ namespace ComTestApp
                 {
                     InitHardView();
                     portCount = portSuc = 0;
-                    //switch (hardNum)
-                    //{
-                    //    case 1:
-                    //        while (tabPage1.Controls.Count == 0) { await Task.Delay(100); }
-                    //        break;
-                    //    case 2:
-                    //        while (tabPage2.Controls.Count == 0) { await Task.Delay(100); }
-                    //        break;
-                    //    case 3:
-                    //        while (tabPage3.Controls.Count == 0) { await Task.Delay(100); }
-                    //        break;
-                    //    case 4:
-                    //        while (tabPage4.Controls.Count == 0) { await Task.Delay(100); }
-                    //        break;
-                    //    default:
-                    //        break;
-                    //}
                     startTime = DateTime.Now;
                     if (th != null && !th.IsAlive)
                     {
@@ -458,6 +457,17 @@ namespace ComTestApp
             });
         }
 
+        private void Btn_Revit_Click(object sender, EventArgs e)
+        {
+            var usps = Grid_Data.DataSource.ToSerializeObject().ToDeserializeObject<List<UsbPortEntity>>();
+            UsbPortEntity portEntity = usps[0];
+            portEntity.BoxId = "00";
+            portEntity.PortId = "00";
+            portEntity.CardId = "00";
+            var IsSuc = comport.ReadCommByUkeyAdd("000000", portEntity);
+            LogHelper.ToLog($"复位键000000发送:" + (IsSuc ? "成功" : "失败"));
+        }
+
         private async void Cmb_Listcod_SelectedIndexChanged(object sender, EventArgs e)
         {
             string seletxt = Cmb_Listcod.Text;
@@ -486,6 +496,11 @@ namespace ComTestApp
                     });
                 UpdateDevieInfo(portEntity);
             });
+        }        
+
+        private void Cmb_StartPort_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            startPortStr = Cmb_StartPort.Text;
         }
 
         #endregion
@@ -533,6 +548,21 @@ namespace ComTestApp
                 case 5:
                     tp = tabPage5;
                     break;
+                case 6:
+                    tp = tabPage6;
+                    break;
+                case 7:
+                    tp = tabPage7;
+                    break;
+                case 8:
+                    tp = tabPage8;
+                    break;
+                case 9:
+                    tp = tabPage9;
+                    break;
+                case 10:
+                    tp = tabPage10;
+                    break;
                 default:
                     break;
             }
@@ -542,10 +572,7 @@ namespace ComTestApp
             Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, hardNum.ToString());
             if (hardType.Equals("B2"))
             {
-                BoxDict.Add("01", "01");
-                BoxDict.Add("02", "02");
-                BoxDict.Add("03", "03");
-                BoxDict.Add("04", "04");
+                BoxDict = GetB2BoxOcdesDic(hardNum);                
             }
             string boxValue = "";
             foreach (var item in BoxDict)
@@ -565,7 +592,7 @@ namespace ComTestApp
                 for (int r = 0; r < 5; r++)
                 {
                     CardDict.Add(AppedNumber(r + 1 + (boxNum - 1) * 5), AppedNumber(r + 1 + (boxNum - 1) * 5));
-                }              
+                }         
             }
             CardDict = CardDict.OrderBy(p => p.Key).ToDictionary(p => p.Key,o => o.Value);  
             //接口信息
@@ -598,7 +625,27 @@ namespace ComTestApp
                 Grid_Data.DataSource = new BindingList<UsbPortEntity>(portEntitys);
             });
             Cmb_Listcod.DelegateControl(() => { Cmb_Listcod.DataSource = codeStrs; });
+            Cmb_StartPort.DelegateControl(() => { Cmb_StartPort.DataSource = codeStrs; });
         }
+
+        /// <summary>
+        /// 获取B2类型设备的箱体信息
+        /// </summary>
+        /// <param name="hardNum"></param>
+        /// <returns></returns>
+        private Dictionary<string, string> GetB2BoxOcdesDic(int hardNum)
+        {
+            Dictionary<string, string> boxDict = new Dictionary<string, string>();
+            for (int i = 0; i < hardNum; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                {
+                    boxDict.Add((i * 5 + j).ToString().PadLeft(2, '0'), (i * 5 + j).ToString().PadLeft(2, '0'));
+                }
+            }
+            return boxDict;
+        }
+
         /// <summary>
         /// 初始化DataGrid列
         /// </summary>
@@ -639,7 +686,7 @@ namespace ComTestApp
         private void InitHardView()
         {
             clearControl();
-            tabPage2.Parent = tabPage3.Parent = tabPage4.Parent = tabPage5.Parent = null;
+            tabPage10.Parent = tabPage9.Parent = tabPage8.Parent = tabPage7.Parent = tabPage6.Parent = tabPage2.Parent = tabPage3.Parent = tabPage4.Parent = tabPage5.Parent = null;
             if (hardType.Equals("A1"))
             {
                 switch (hardNum)
@@ -681,17 +728,47 @@ namespace ComTestApp
             }
             else if (hardType.Equals("B2"))
             {
-                tabPage5.Parent = tabPage4.Parent = tabPage3.Parent = tabPage2.Parent = tabPage1.Parent;
-                tabPage1.Controls.Add(GenerateBControl(1));
-                tabPage2.Controls.Add(GenerateBControl(2));
-                tabPage3.Controls.Add(GenerateBControl(3));
-                tabPage4.Controls.Add(GenerateBControl(4));
-                tabPage5.Controls.Add(GenerateBControl(5));
-                tabPage1.Text = hardType + "抽屉1信息";
-                tabPage2.Text = hardType + "抽屉2信息";
-                tabPage3.Text = hardType + "抽屉3信息";
-                tabPage4.Text = hardType + "抽屉4信息";
-                tabPage5.Text = hardType + "抽屉5信息";
+                switch (hardNum)
+                {
+                    case 1:
+                        tabPage5.Parent = tabPage4.Parent = tabPage3.Parent = tabPage2.Parent = tabPage1.Parent;
+                        tabPage1.Controls.Add(GenerateBControl(1));
+                        tabPage2.Controls.Add(GenerateBControl(2));
+                        tabPage3.Controls.Add(GenerateBControl(3));
+                        tabPage4.Controls.Add(GenerateBControl(4));
+                        tabPage5.Controls.Add(GenerateBControl(5));
+                        tabPage1.Text = hardType + "抽屉1信息";
+                        tabPage2.Text = hardType + "抽屉2信息";
+                        tabPage3.Text = hardType + "抽屉3信息";
+                        tabPage4.Text = hardType + "抽屉4信息";
+                        tabPage5.Text = hardType + "抽屉5信息";
+                        break;
+                    case 2:
+                        tabPage10.Parent = tabPage9.Parent = tabPage8.Parent = tabPage7.Parent = tabPage6.Parent= tabPage5.Parent = tabPage4.Parent = tabPage3.Parent = tabPage2.Parent = tabPage1.Parent;
+                        tabPage1.Controls.Add(GenerateBControl(1));
+                        tabPage2.Controls.Add(GenerateBControl(2));
+                        tabPage3.Controls.Add(GenerateBControl(3));
+                        tabPage4.Controls.Add(GenerateBControl(4));
+                        tabPage5.Controls.Add(GenerateBControl(5));
+                        tabPage6.Controls.Add(GenerateBControl(6));
+                        tabPage7.Controls.Add(GenerateBControl(7));
+                        tabPage8.Controls.Add(GenerateBControl(8));
+                        tabPage9.Controls.Add(GenerateBControl(9));
+                        tabPage10.Controls.Add(GenerateBControl(10));
+                        tabPage1.Text = hardType + "抽屉1信息";
+                        tabPage2.Text = hardType + "抽屉2信息";
+                        tabPage3.Text = hardType + "抽屉3信息";
+                        tabPage4.Text = hardType + "抽屉4信息";
+                        tabPage5.Text = hardType + "抽屉5信息";
+                        tabPage6.Text = hardType + "抽屉6信息";
+                        tabPage7.Text = hardType + "抽屉7信息";
+                        tabPage8.Text = hardType + "抽屉8信息";
+                        tabPage9.Text = hardType + "抽屉9信息";
+                        tabPage10.Text = hardType + "抽屉10信息";
+                        break;
+                    default:
+                        break;
+                }
             }
             else
             {
@@ -736,6 +813,36 @@ namespace ComTestApp
             {
                 tabPage5.Controls.Remove(ctrl5);
                 tabPage5.Invalidate();
+            }
+            var ctrl6 = tabPage6.Controls.OfType<Control>().Where(o => o.Name.Contains("PanelMain_")).FirstOrDefault();
+            if (ctrl6 != null)
+            {
+                tabPage6.Controls.Remove(ctrl6);
+                tabPage6.Invalidate();
+            }
+            var ctrl7 = tabPage7.Controls.OfType<Control>().Where(o => o.Name.Contains("PanelMain_")).FirstOrDefault();
+            if (ctrl7 != null)
+            {
+                tabPage7.Controls.Remove(ctrl7);
+                tabPage7.Invalidate();
+            }
+            var ctrl8 = tabPage8.Controls.OfType<Control>().Where(o => o.Name.Contains("PanelMain_")).FirstOrDefault();
+            if (ctrl8 != null)
+            {
+                tabPage8.Controls.Remove(ctrl8);
+                tabPage8.Invalidate();
+            }
+            var ctrl9 = tabPage9.Controls.OfType<Control>().Where(o => o.Name.Contains("PanelMain_")).FirstOrDefault();
+            if (ctrl9 != null)
+            {
+                tabPage9.Controls.Remove(ctrl9);
+                tabPage9.Invalidate();
+            }
+            var ctrl10 = tabPage10.Controls.OfType<Control>().Where(o => o.Name.Contains("PanelMain_")).FirstOrDefault();
+            if (ctrl10 != null)
+            {
+                tabPage10.Controls.Remove(ctrl10);
+                tabPage10.Invalidate();
             }
         }
 
@@ -927,6 +1034,7 @@ namespace ComTestApp
                         {
                             if (stop)
                             {
+                                BatchSaveData();
                                 return;
                             }
                             mre.WaitOne();
@@ -951,36 +1059,59 @@ namespace ComTestApp
                     //检测次数处理
                     if (checkNum == CheckEnum.CheckNum.Continuity)
                     {
-                        switch (hardNum)
+                        if (hardType.Equals("A1"))
                         {
-                            case 1:
-                                UpdateAllStyle(tabPage1);
-                                break;
-                            case 2:
-                                UpdateAllStyle(tabPage1);
-                                UpdateAllStyle(tabPage2);
-                                break;
-                            case 3:
-                                UpdateAllStyle(tabPage1);
-                                UpdateAllStyle(tabPage2);
-                                UpdateAllStyle(tabPage3);
-                                break;
-                            case 4:
+                            switch (hardNum)
+                            {
+                                case 1:
+                                    UpdateAllStyle(tabPage1);
+                                    break;
+                                case 2:
+                                    UpdateAllStyle(tabPage1);
+                                    UpdateAllStyle(tabPage2);
+                                    break;
+                                case 3:
+                                    UpdateAllStyle(tabPage1);
+                                    UpdateAllStyle(tabPage2);
+                                    UpdateAllStyle(tabPage3);
+                                    break;
+                                case 4:
+                                    UpdateAllStyle(tabPage1);
+                                    UpdateAllStyle(tabPage2);
+                                    UpdateAllStyle(tabPage3);
+                                    UpdateAllStyle(tabPage4);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        if (hardType.Equals("C1"))
+                        {
+                            UpdateAllStyle(tabPage1);
+                        }                        
+                        if (hardType.Equals("B2"))
+                        {
+                            if (hardNum == 1)
+                            {
                                 UpdateAllStyle(tabPage1);
                                 UpdateAllStyle(tabPage2);
                                 UpdateAllStyle(tabPage3);
                                 UpdateAllStyle(tabPage4);
-                                break;
-                            default:
-                                break;
-                        }
-                        if (hardType.Equals("B2"))
-                        {
-                            UpdateAllStyle(tabPage1);
-                            UpdateAllStyle(tabPage2);
-                            UpdateAllStyle(tabPage3);
-                            UpdateAllStyle(tabPage4);
-                            UpdateAllStyle(tabPage5);
+                                UpdateAllStyle(tabPage5);
+                            }
+                            else 
+                            {
+                                UpdateAllStyle(tabPage1);
+                                UpdateAllStyle(tabPage2);
+                                UpdateAllStyle(tabPage3);
+                                UpdateAllStyle(tabPage4);
+                                UpdateAllStyle(tabPage5);
+                                UpdateAllStyle(tabPage6);
+                                UpdateAllStyle(tabPage7);
+                                UpdateAllStyle(tabPage8);
+                                UpdateAllStyle(tabPage9);
+                                UpdateAllStyle(tabPage10);
+                            }                            
                         }
                         LoadHardWareInfo(1);
                         //CheckAllInfo();
@@ -1050,6 +1181,21 @@ namespace ComTestApp
                     break;
                 case 4:
                     tp = tabPage5;
+                    break;
+                case 5:
+                    tp = tabPage6;
+                    break;
+                case 6:
+                    tp = tabPage7;
+                    break;
+                case 7:
+                    tp = tabPage8;
+                    break;
+                case 8:
+                    tp = tabPage9;
+                    break;
+                case 9:
+                    tp = tabPage10;
                     break;
                 default:
                     break;
@@ -1170,19 +1316,38 @@ namespace ComTestApp
                 Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, hardNum.ToString());
                 if (hardType.Equals("B2"))
                 {
-                    BoxDict.Add("01", "01");
-                    BoxDict.Add("02", "02");
-                    BoxDict.Add("03", "03");
-                    BoxDict.Add("04", "04");
+                    BoxDict = GetB2BoxOcdesDic(hardNum);
                 }
                 Color defaultColor = Color.Black;
                 foreach (var boxItem in BoxDict)
                 {
+                    string boxCode= "", banCode = "", portCode = "";
+                    if (checkNum == CheckEnum.CheckNum.Single)
+                    {
+                        boxCode = startPortStr.Substring(0,2);
+                        banCode = startPortStr.Substring(2,2);
+                        portCode = startPortStr.Substring(4,2);
+                    }
+                    if (!boxCode.IsEmpty())
+                    {
+                        if(int.Parse(boxItem.Key) < int.Parse(boxCode)) continue;
+                    }
                     LoadHardWareInfo(int.Parse(boxItem.Value) + 1);
                     foreach (DataGridViewRow item in Grid_Data.Rows)
                     {
+                        //跳过板
+                        if (!banCode.IsEmpty())
+                        {
+                            if (int.Parse(item.Cells["CardId"].Value.ToString()) < int.Parse(banCode)) continue;
+                        }
+                        //跳过端口
+                        if (!portCode.IsEmpty())
+                        {
+                            if (int.Parse(boxCode) == int.Parse(boxItem.Key) && int.Parse(banCode) == int.Parse(item.Cells["CardId"].Value.ToString()) && int.Parse(portCode) < int.Parse(item.Cells["PortId"].Value.ToString())) continue;
+                        }
                         if (stop)
                         {
+                            BatchSaveData();
                             return false;
                         }
                         mre.WaitOne();
@@ -1240,20 +1405,29 @@ namespace ComTestApp
                 Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, hardNum.ToString());
                 if (hardType.Equals("B2"))
                 {
-                    BoxDict.Add("01", "01");
-                    BoxDict.Add("02", "02");
-                    BoxDict.Add("03", "03");
-                    BoxDict.Add("04", "04");
+                    BoxDict = GetB2BoxOcdesDic(hardNum);
                 }
                 Color defaultColor = Color.Black;               
                 foreach (var boxItem in BoxDict)
                 {
+                    string boxCode = "", banCode = "", portCode = "";
+                    if (checkNum == CheckEnum.CheckNum.Single)
+                    {
+                        boxCode = startPortStr.Substring(0, 2);
+                        banCode = startPortStr.Substring(2, 2);
+                        portCode = startPortStr.Substring(4, 2);
+                    }
+                    if (!boxCode.IsEmpty())
+                    {
+                        if (int.Parse(boxItem.Key) < int.Parse(boxCode)) continue;
+                    }
                     List<int> rlc = new List<int>();
                     LoadHardWareInfo(int.Parse(boxItem.Value) + 1);
                     while (rlc.Count < Grid_Data.Rows.Count)
                     {
                         if (stop)
                         {
+                            BatchSaveData();
                             return false;
                         }
                         mre.WaitOne();
@@ -1264,6 +1438,16 @@ namespace ComTestApp
                             i = rdm.Next(0, Grid_Data.Rows.Count);
                         }
                         rlc.Add(i);
+                        //跳过板
+                        if (!banCode.IsEmpty())
+                        {
+                            if (int.Parse(Grid_Data.Rows[i].Cells["CardId"].Value.ToString()) < int.Parse(banCode)) continue;
+                        }
+                        //跳过端口
+                        if (!portCode.IsEmpty())
+                        {
+                            if (int.Parse(boxCode) == int.Parse(boxItem.Key) && int.Parse(banCode) == int.Parse(Grid_Data.Rows[i].Cells["CardId"].Value.ToString()) && int.Parse(portCode) < int.Parse(Grid_Data.Rows[i].Cells["PortId"].Value.ToString())) continue;
+                        }                        
                         Grid_Data.DelegateControl(() => { Grid_Data.CurrentCell = Grid_Data.Rows[i].Cells["Num"]; });
                         Grid_Data.Rows[i].Cells["StartTime"].Value = DateTime.Now;
                         Grid_Data.Rows[i].Cells["BoxId"].Value = boxItem.Value;
@@ -1314,14 +1498,22 @@ namespace ComTestApp
                 Dictionary<string, string> BoxDict = ConstValue.GetBoxCodesDic(hardType, hardNum.ToString());
                 if (hardType.Equals("B2"))
                 {
-                    BoxDict.Add("01", "01");
-                    BoxDict.Add("02", "02");
-                    BoxDict.Add("03", "03");
-                    BoxDict.Add("04", "04");
+                    BoxDict = GetB2BoxOcdesDic(hardNum);
                 }
                 Color defaultColor = Color.Black;
                 foreach (var boxItem in BoxDict)
                 {
+                    string boxCode = "", banCode = "", portCode = "";
+                    if (checkNum == CheckEnum.CheckNum.Single)
+                    {
+                        boxCode = startPortStr.Substring(0, 2);
+                        banCode = startPortStr.Substring(2, 2);
+                        portCode = startPortStr.Substring(4, 2);
+                    }
+                    if (!boxCode.IsEmpty())
+                    {
+                        if (int.Parse(boxItem.Key) < int.Parse(boxCode)) continue;
+                    }
                     List<int> rlc = new List<int>();
                     LoadHardWareInfo(int.Parse(boxItem.Value) + 1);
                     //Thread.Sleep(1200);
@@ -1330,6 +1522,7 @@ namespace ComTestApp
                     {
                         if (stop)
                         {
+                            BatchSaveData();
                             return false;
                         }
                         mre.WaitOne();
@@ -1340,6 +1533,16 @@ namespace ComTestApp
                             i = rdm.Next(0, Grid_Data.Rows.Count);
                         }
                         rlc.Add(i);
+                        //跳过板
+                        if (!banCode.IsEmpty())
+                        {
+                            if (int.Parse(Grid_Data.Rows[i].Cells["CardId"].Value.ToString()) < int.Parse(banCode)) continue;
+                        }
+                        //跳过端口
+                        if (!portCode.IsEmpty())
+                        {
+                            if (int.Parse(boxCode) == int.Parse(boxItem.Key) && int.Parse(banCode) == int.Parse(Grid_Data.Rows[i].Cells["CardId"].Value.ToString()) && int.Parse(portCode) < int.Parse(Grid_Data.Rows[i].Cells["PortId"].Value.ToString())) continue;
+                        }
                         Grid_Data.DelegateControl(() => { Grid_Data.CurrentCell = Grid_Data.Rows[i].Cells["Num"]; });
                         Grid_Data.Rows[i].Cells["StartTime"].Value = DateTime.Now;
                         Grid_Data.Rows[i].Cells["BoxId"].Value = boxItem.Value;

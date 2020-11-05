@@ -84,7 +84,7 @@ namespace ComTestApp
             #endregion
 
             Time_End.Value = DateTime.Today;
-            Time_Begin.Value = DateTime.Today.AddDays(-30);
+            Time_Begin.Value = DateTime.Today;//.AddDays(-30);
             Lb_PageInfo.Text = "共0条记录     0/0";
         }
         
@@ -275,7 +275,7 @@ namespace ComTestApp
         {
             Time_Begin.Text = Time_End.Text = Text_BrantchNumber.Text = "";
             Time_End.Value = DateTime.Today;
-            Time_Begin.Value = DateTime.Today.AddDays(-30);
+            Time_Begin.Value = DateTime.Today;//.AddDays(-30);
             Cmb_HardList.SelectedIndex = Cmb_PortList.SelectedIndex = Cmb_Status.SelectedIndex = 0;
         }
     }
