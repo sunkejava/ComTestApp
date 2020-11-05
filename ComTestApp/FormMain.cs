@@ -1343,7 +1343,7 @@ namespace ComTestApp
                         //跳过端口
                         if (!portCode.IsEmpty())
                         {
-                            if (int.Parse(boxCode) == int.Parse(boxItem.Key) && int.Parse(banCode) == int.Parse(item.Cells["CardId"].Value.ToString()) && int.Parse(portCode) < int.Parse(item.Cells["PortId"].Value.ToString())) continue;
+                            if (int.Parse(boxCode) == int.Parse(boxItem.Key) && int.Parse(banCode) == int.Parse(item.Cells["CardId"].Value.ToString()) && int.Parse(portCode) > int.Parse(item.Cells["PortId"].Value.ToString())) continue;
                         }
                         if (stop)
                         {
@@ -1446,7 +1446,7 @@ namespace ComTestApp
                         //跳过端口
                         if (!portCode.IsEmpty())
                         {
-                            if (int.Parse(boxCode) == int.Parse(boxItem.Key) && int.Parse(banCode) == int.Parse(Grid_Data.Rows[i].Cells["CardId"].Value.ToString()) && int.Parse(portCode) < int.Parse(Grid_Data.Rows[i].Cells["PortId"].Value.ToString())) continue;
+                            if (int.Parse(boxCode) == int.Parse(boxItem.Key) && int.Parse(banCode) == int.Parse(Grid_Data.Rows[i].Cells["CardId"].Value.ToString()) && int.Parse(portCode) > int.Parse(Grid_Data.Rows[i].Cells["PortId"].Value.ToString())) continue;
                         }                        
                         Grid_Data.DelegateControl(() => { Grid_Data.CurrentCell = Grid_Data.Rows[i].Cells["Num"]; });
                         Grid_Data.Rows[i].Cells["StartTime"].Value = DateTime.Now;
@@ -1541,7 +1541,7 @@ namespace ComTestApp
                         //跳过端口
                         if (!portCode.IsEmpty())
                         {
-                            if (int.Parse(boxCode) == int.Parse(boxItem.Key) && int.Parse(banCode) == int.Parse(Grid_Data.Rows[i].Cells["CardId"].Value.ToString()) && int.Parse(portCode) < int.Parse(Grid_Data.Rows[i].Cells["PortId"].Value.ToString())) continue;
+                            if (int.Parse(boxCode) == int.Parse(boxItem.Key) && int.Parse(banCode) == int.Parse(Grid_Data.Rows[i].Cells["CardId"].Value.ToString()) && int.Parse(portCode) > int.Parse(Grid_Data.Rows[i].Cells["PortId"].Value.ToString())) continue;
                         }
                         Grid_Data.DelegateControl(() => { Grid_Data.CurrentCell = Grid_Data.Rows[i].Cells["Num"]; });
                         Grid_Data.Rows[i].Cells["StartTime"].Value = DateTime.Now;
