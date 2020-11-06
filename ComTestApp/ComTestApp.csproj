@@ -69,6 +69,7 @@
     <Compile Include="Common\DesktopWinAPI.cs" />
     <Compile Include="Common\ExtensionHelp.cs" />
     <Compile Include="Common\RenderHelper.cs" />
+    <Compile Include="Common\StaticCommon.cs" />
     <Compile Include="Common\Win32.cs" />
     <Compile Include="Entitys\AppConfig.cs" />
     <Compile Include="Entitys\CommonEnitityMappingAttribute.cs" />

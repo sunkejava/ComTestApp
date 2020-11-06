@@ -45,11 +45,12 @@ namespace ComTestApp
         CheckEnum.CheckModel checkModel = CheckEnum.CheckModel.Order;//检测模式
         DateTime startTime,endTime;//开始时间、结束时间
         int portCount = 0, portSuc = 0;//总端口数及成功端口数
-        volatile bool stop = false;//是否停止
+        //volatile bool stop = true;//是否停止
+        
         /// <summary>
         /// 开始检测端口位置
         /// </summary>
-        string startPortStr = "000000";
+        string startPortStr = "";
         //bool IsRead = false;//是否读取
         AppConfig appConfig = null;
         ComPort comport = new ComPort(3500);
@@ -336,14 +337,14 @@ namespace ComTestApp
             {
                 if (Btn_Start.Text.Trim().Equals("开始"))
                 {
+                    StaticCommon.IsStop = false;
                     InitHardView();
                     portCount = portSuc = 0;
                     startTime = DateTime.Now;
                     if (th != null && !th.IsAlive)
                     {
                         th.Abort();
-                    }
-                    stop = false;
+                    }                   
                     //开始事件
                     th = new Thread(CheckAllInfo);
                     //th.IsBackground = true;                    
@@ -352,16 +353,20 @@ namespace ComTestApp
                 }
                 else
                 {
+                    StaticCommon.IsStop = false;
                     //暂停后继续开始事件
                     mre.Set();
                 }
                 Btn_Start.Text = "暂停";
-                Btn_End.Enabled = true;                
+                Btn_End.Enabled = true;
+                Btn_Revit.Enabled = false;
             }
             else
             {
                 Btn_End.Enabled = false;
                 Btn_Start.Text = "继续";
+                Btn_Revit.Enabled = true;
+                //stop = true;
                 //暂停事件
                 mre.Reset();
             }
@@ -380,11 +385,13 @@ namespace ComTestApp
                 endTime = DateTime.Now;
                 if (th.IsAlive)
                 {
-                    stop = true;
+                    StaticCommon.IsStop = true;
                     mre.Set();                    
                     //th.Abort();
                 }
+                StaticCommon.ThIsStop = true;
                 Btn_End.Enabled = false;
+                Btn_Revit.Enabled = true;
             }
             catch (Exception ex)
             {
@@ -471,6 +478,7 @@ namespace ComTestApp
         private async void Cmb_Listcod_SelectedIndexChanged(object sender, EventArgs e)
         {
             string seletxt = Cmb_Listcod.Text;
+            if (seletxt.IsEmpty()) return;
             await Task.Run(() =>
             {
                 if (seletxt.IsEmpty()) return;
@@ -607,7 +615,9 @@ namespace ComTestApp
             List<UsbPortEntity> portEntitys = new List<UsbPortEntity>();
             int i = 1;
             List<string> codeStrs = new List<string>();
+            List<string> mcodeStr = new List<string>();
             codeStrs.Add(string.Empty);
+            mcodeStr.Add(string.Empty);
             //foreach (var BoxItem in BoxDict)
             //{
             foreach (var CardItem in CardDict)
@@ -616,6 +626,7 @@ namespace ComTestApp
                     {
                         portEntitys.Add(new UsbPortEntity() { Num = i,BatchNumber = DateTime.Now.ToString("yyyyMMddHHmmss"),BoxId = boxValue, CardId = CardItem.Key,CardName = CardItem.Value,PortId = item.Value,PortStatus = "未检测",SerialPortName = SerialPortName,HardType = hardType });
                         codeStrs.Add(boxValue + CardItem.Key + item.Value);
+                        mcodeStr.Add(boxValue + CardItem.Key + item.Value);
                         i++;
                     }
                 }
@@ -624,8 +635,11 @@ namespace ComTestApp
             {
                 Grid_Data.DataSource = new BindingList<UsbPortEntity>(portEntitys);
             });
-            Cmb_Listcod.DelegateControl(() => { Cmb_Listcod.DataSource = codeStrs; });
-            Cmb_StartPort.DelegateControl(() => { Cmb_StartPort.DataSource = codeStrs; });
+            if (StaticCommon.ThIsStop)
+            {
+                Cmb_Listcod.DelegateControl(() => { Cmb_Listcod.DataSource = codeStrs; });
+                Cmb_StartPort.DelegateControl(() => { Cmb_StartPort.DataSource = mcodeStr; });
+            }
         }
 
         /// <summary>
@@ -1032,7 +1046,7 @@ namespace ComTestApp
                 bool IsResult = false;
                 ToDoThing:
                         {
-                            if (stop)
+                            if (StaticCommon.ThIsStop)
                             {
                                 BatchSaveData();
                                 return;
@@ -1119,7 +1133,7 @@ namespace ComTestApp
                     }
                     else
                     {
-                        stop = true;
+                        StaticCommon.ThIsStop = true;
                         //DelegateUpEnd(false, "结束");
                         Btn_End.DelegateControl(() =>
                         {
@@ -1131,11 +1145,14 @@ namespace ComTestApp
                             Btn_Start.Text = "开始";
                             Btn_Start.Enabled = true;
                         });
+                        Btn_Revit.DelegateControl(() => 
+                        {
+                            Btn_Revit.Enabled = true;
+                        });
                         UpdateTaskeUpInfo("检测完毕！");
-                        break;
+                        return;
                     }
                 }
-                stop = false;
             }
             catch (Exception ex)
             {
@@ -1322,7 +1339,7 @@ namespace ComTestApp
                 foreach (var boxItem in BoxDict)
                 {
                     string boxCode= "", banCode = "", portCode = "";
-                    if (checkNum == CheckEnum.CheckNum.Single)
+                    if (checkNum == CheckEnum.CheckNum.Single && !startPortStr.IsEmpty())
                     {
                         boxCode = startPortStr.Substring(0,2);
                         banCode = startPortStr.Substring(2,2);
@@ -1345,7 +1362,7 @@ namespace ComTestApp
                         {
                             if (int.Parse(boxCode) == int.Parse(boxItem.Key) && int.Parse(banCode) == int.Parse(item.Cells["CardId"].Value.ToString()) && int.Parse(portCode) > int.Parse(item.Cells["PortId"].Value.ToString())) continue;
                         }
-                        if (stop)
+                        if (StaticCommon.ThIsStop)
                         {
                             BatchSaveData();
                             return false;
@@ -1411,7 +1428,7 @@ namespace ComTestApp
                 foreach (var boxItem in BoxDict)
                 {
                     string boxCode = "", banCode = "", portCode = "";
-                    if (checkNum == CheckEnum.CheckNum.Single)
+                    if (checkNum == CheckEnum.CheckNum.Single && !startPortStr.IsEmpty())
                     {
                         boxCode = startPortStr.Substring(0, 2);
                         banCode = startPortStr.Substring(2, 2);
@@ -1425,7 +1442,7 @@ namespace ComTestApp
                     LoadHardWareInfo(int.Parse(boxItem.Value) + 1);
                     while (rlc.Count < Grid_Data.Rows.Count)
                     {
-                        if (stop)
+                        if (StaticCommon.ThIsStop)
                         {
                             BatchSaveData();
                             return false;
@@ -1504,7 +1521,7 @@ namespace ComTestApp
                 foreach (var boxItem in BoxDict)
                 {
                     string boxCode = "", banCode = "", portCode = "";
-                    if (checkNum == CheckEnum.CheckNum.Single)
+                    if (checkNum == CheckEnum.CheckNum.Single && !startPortStr.IsEmpty())
                     {
                         boxCode = startPortStr.Substring(0, 2);
                         banCode = startPortStr.Substring(2, 2);
@@ -1520,7 +1537,7 @@ namespace ComTestApp
                     int cc = hardType.Equals("B2") ? new Random().Next(20, 32) : new Random().Next(5, 8);
                     while (rlc.Count < cc)
                     {
-                        if (stop)
+                        if (StaticCommon.ThIsStop)
                         {
                             BatchSaveData();
                             return false;
