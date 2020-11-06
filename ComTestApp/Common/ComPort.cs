@@ -101,12 +101,14 @@ namespace ComTestApp.Common
                     sp.Open();
                     var ban = Convert.ToInt32(ukeyadd.Substring(2, 2));
                     var usb = Convert.ToInt32(ukeyadd.Substring(4, 2));
+                    if (ban <= 0) ban = 255;
+                    if (usb <= 0) ban = 255;
                     //存放待发送的一包数据（包括帧头，命令号，帧长，帧数据，校验，帧尾）
                     var package = new byte[5];
                     package[0] = 0xF5;//帧头 
                     package[1] = (Byte)(UtilHelper.Convert10To16(ban));//板ID      
                     package[2] = (Byte)(UtilHelper.Convert10To16(usb));//usbid  
-                    package[3] = (Byte)(UtilHelper.Convert10To16(ban + usb));//校验和
+                    package[3] = ((byte)(ban >= 255 ? 0xFF : (Byte)(UtilHelper.Convert10To16(ban + usb))));//校验和
                     package[4] = 0xC4;//帧尾
 
                     if (!sp.IsOpen)
