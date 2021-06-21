@@ -22,6 +22,22 @@ namespace ComTestApp.Common
             /// </summary>
             Continuity
         }
+
+        /// <summary>
+        /// 设备校验模式
+        /// </summary>
+        public enum DeviceCheckMode
+        {
+            /// <summary>
+            /// U盘驱动验证
+            /// </summary>
+            Drive,
+            /// <summary>
+            /// 上海CA证书验证
+            /// </summary>
+            ShCa
+        }
+
         /// <summary>
         /// 检测模式
         /// </summary>

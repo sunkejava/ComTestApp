@@ -68,6 +68,8 @@
             this.Panel_Bottom = new System.Windows.Forms.Panel();
             this.Group_DriveInfo = new System.Windows.Forms.GroupBox();
             this.Grid_Data = new System.Windows.Forms.DataGridView();
+            this.Cmb_DeviceCheckMode = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
             this.Panel_Top.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Num_Waiting)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Text_Number)).BeginInit();
@@ -81,6 +83,8 @@
             // 
             // Panel_Top
             // 
+            this.Panel_Top.Controls.Add(this.Cmb_DeviceCheckMode);
+            this.Panel_Top.Controls.Add(this.label8);
             this.Panel_Top.Controls.Add(this.Cmb_StartPort);
             this.Panel_Top.Controls.Add(this.Btn_Revit);
             this.Panel_Top.Controls.Add(this.Btn_Send);
@@ -578,6 +582,31 @@
             this.Grid_Data.Size = new System.Drawing.Size(1918, 63);
             this.Grid_Data.TabIndex = 13;
             // 
+            // Cmb_DeviceCheckMode
+            // 
+            this.Cmb_DeviceCheckMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.Cmb_DeviceCheckMode.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.Cmb_DeviceCheckMode.FormattingEnabled = true;
+            this.Cmb_DeviceCheckMode.Items.AddRange(new object[] {
+            "U盘检测",
+            "上海CA"});
+            this.Cmb_DeviceCheckMode.Location = new System.Drawing.Point(873, 53);
+            this.Cmb_DeviceCheckMode.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.Cmb_DeviceCheckMode.Name = "Cmb_DeviceCheckMode";
+            this.Cmb_DeviceCheckMode.Size = new System.Drawing.Size(121, 31);
+            this.Cmb_DeviceCheckMode.TabIndex = 53;
+            this.Cmb_DeviceCheckMode.SelectedIndexChanged += new System.EventHandler(this.Cmb_DeviceCheckMode_SelectedIndexChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label8.Location = new System.Drawing.Point(790, 56);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(95, 23);
+            this.label8.TabIndex = 52;
+            this.label8.Text = "校验方式：";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
@@ -652,6 +681,8 @@
         private System.Windows.Forms.Button Btn_Revit;
         private System.Windows.Forms.ComboBox Cmb_StartPort;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox Cmb_DeviceCheckMode;
+        private System.Windows.Forms.Label label8;
     }
 }
 

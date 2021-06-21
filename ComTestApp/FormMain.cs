@@ -43,6 +43,7 @@ namespace ComTestApp
         int hardNum = 1;//设备数量
         CheckEnum.CheckNum checkNum = CheckEnum.CheckNum.Single;//检测次数
         CheckEnum.CheckModel checkModel = CheckEnum.CheckModel.Order;//检测模式
+        CheckEnum.DeviceCheckMode deviceCheckMode = CheckEnum.DeviceCheckMode.Drive;//结果检验模式
         DateTime startTime,endTime;//开始时间、结束时间
         int portCount = 0, portSuc = 0;//总端口数及成功端口数
         //volatile bool stop = true;//是否停止
@@ -62,17 +63,18 @@ namespace ComTestApp
         {
             try
             {
-                #region 控件初始化
-                InitColInfo();
-                Cmb_HardList.DataSource = new List<string>() { "C1", "A1", "B2" };
-                LoadComInfo();
-                setDataGridStyle();
-                #endregion
 
                 #region 数据库初始化
                 this.BaseEntityHelp().CheckTableExist(new UsbPortEntity());
                 this.BaseEntityHelp().CheckTableExist(new AppConfig());
                 #endregion
+
+                #region 控件初始化
+                InitColInfo();
+                Cmb_HardList.DataSource = new List<string>() { "C1", "A1", "B2" };
+                LoadComInfo();
+                setDataGridStyle();
+                #endregion                
 
                 #region 加载配置
                 var ags = ExtensionHelp.SelectEntity(new AppConfig() { Id = 1 });
@@ -86,6 +88,7 @@ namespace ComTestApp
                         hardNum = 1,
                         checkNumIndex = 0,
                         checkModelIndex = 0,
+                        deviceCheckModeIndex = 0,
                         waitNum = 2500
                     };
                     this.BaseEntityHelp().Insert(appConfig);
@@ -96,6 +99,7 @@ namespace ComTestApp
                 hardNum = (int)appConfig.hardNum;
                 Cmb_CheckNum.SelectedIndex = appConfig.checkNumIndex;
                 Cmb_CheckModel.SelectedIndex = appConfig.checkModelIndex;
+                Cmb_DeviceCheckMode.SelectedIndex = appConfig.deviceCheckModeIndex;
                 Num_Waiting.Value = appConfig.waitNum;
                 Cmb_HardList.SelectedIndex = appConfig.hardTypeIndex;
                 hardType = Cmb_HardList.SelectedValue.ToString();
@@ -318,6 +322,22 @@ namespace ComTestApp
             }
         }
 
+        private void Cmb_DeviceCheckMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (appConfig != null) appConfig.deviceCheckModeIndex = Cmb_DeviceCheckMode.SelectedIndex;
+            switch (Cmb_DeviceCheckMode.Text.Trim())
+            {
+                case "U盘检测":
+                    deviceCheckMode = CheckEnum.DeviceCheckMode.Drive;
+                    break;
+                case "上海CA":
+                    deviceCheckMode = CheckEnum.DeviceCheckMode.ShCa;
+                    break;                
+                default:
+                    break;
+            }
+        }
+
         ManualResetEvent mre = new ManualResetEvent(false);
         Thread th = null;
         /// <summary>
@@ -452,7 +472,7 @@ namespace ComTestApp
                 portEntity.PortId = portId;
                 portEntity.CardName = banStr;
                 UpdateDevieInfo(portEntity);
-                var IsSuc = comport.ReadCommPort(portEntity);
+                var IsSuc = comport.ReadCommPort(portEntity,deviceCheckMode);
                 portEntity.PortStatus = IsSuc ? "成功" : "失败";
                 endTime = DateTime.Now;
                 Lb_Msg.DelegateControl(
@@ -471,8 +491,10 @@ namespace ComTestApp
             portEntity.BoxId = "00";
             portEntity.PortId = "00";
             portEntity.CardId = "00";
-            var IsSuc = comport.ReadCommByUkeyAdd("000000", portEntity);
+            var IsSuc = comport.ReadCommByUkeyAdd("000000", portEntity,deviceCheckMode);
             LogHelper.ToLog($"复位键000000发送:" + (IsSuc ? "成功" : "失败"));
+            IsSuc = comport.ReadCommByUkeyAdd("FFFFFF", portEntity, deviceCheckMode);
+            LogHelper.ToLog($"复位键FFFFFF发送:" + (IsSuc ? "成功" : "失败"));
         }
 
         private async void Cmb_Listcod_SelectedIndexChanged(object sender, EventArgs e)
@@ -494,7 +516,7 @@ namespace ComTestApp
                 var usps = Grid_Data.DataSource.ToSerializeObject().ToDeserializeObject<List<UsbPortEntity>>();
                 var portEntity = usps.Find(o => o.BoxId == boxCode && o.CardId == banCode && o.PortId == portId);
                 UpdateDevieInfo(portEntity);
-                var IsSuc = comport.ReadCommPort(portEntity);
+                var IsSuc = comport.ReadCommPort(portEntity,deviceCheckMode);
                 portEntity.PortStatus = IsSuc ? "成功" : "失败";
                 endTime = DateTime.Now;
                 Lb_Msg.DelegateControl(
@@ -1380,7 +1402,7 @@ namespace ComTestApp
                         portEntity.BoxId = boxItem.Value;
                         defaultColor = item.DefaultCellStyle.BackColor;
                         item.DefaultCellStyle.BackColor = Color.Gold;
-                        bool IsSuc = comport.ReadCommPort(portEntity);
+                        bool IsSuc = comport.ReadCommPort(portEntity,deviceCheckMode);
                         //Task.Delay((int)Num_Waiting.Value / 2);
                         endTime = DateTime.Now;
                         portEntity.EndTime = endTime;
@@ -1472,7 +1494,7 @@ namespace ComTestApp
                         UpdateDevieInfo(portEntity);
                         defaultColor = Grid_Data.Rows[i].DefaultCellStyle.BackColor;
                         Grid_Data.Rows[i].DefaultCellStyle.BackColor = Color.Gold;
-                        bool IsSuc = comport.ReadCommPort(portEntity);
+                        bool IsSuc = comport.ReadCommPort(portEntity,deviceCheckMode);
                         //Task.Delay((int)Num_Waiting.Value / 2);
                         endTime = DateTime.Now;
                         portEntity.EndTime = endTime;
@@ -1567,7 +1589,7 @@ namespace ComTestApp
                         UpdateDevieInfo(portEntity);
                         defaultColor = Grid_Data.Rows[i].DefaultCellStyle.BackColor;
                         Grid_Data.Rows[i].DefaultCellStyle.BackColor = Color.Gold;
-                        bool IsSuc = comport.ReadCommPort(portEntity);
+                        bool IsSuc = comport.ReadCommPort(portEntity,deviceCheckMode);
                         //await Task.Delay((int)Num_Waiting.Value / 2);
                         endTime = DateTime.Now;
                         portEntity.EndTime = endTime;
@@ -1598,7 +1620,7 @@ namespace ComTestApp
                 return false;
             }
             
-        }
+        }        
 
         /// <summary>
         /// 批量保存数据到库
@@ -1607,6 +1629,7 @@ namespace ComTestApp
         private bool BatchSaveData()
         {
             //每张表更新完毕之后进行批量插入操作
+            if (Grid_Data.Rows.Count == 0) return false;
             var datas = Grid_Data.DataSource.ToSerializeObject().ToDeserializeObject<List<UsbPortEntity>>().FindAll(o => !o.PortStatus.Equals("未检测"));
             if (datas.Count > 0)
             {

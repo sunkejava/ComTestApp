@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace ComTestApp.Common
         }
         static StringBuilder Builder = new StringBuilder();
         public int waitingNum = 2500;//默认等待时间
-        public bool ReadCommPort(UsbPortEntity entity)
+        public bool ReadCommPort(UsbPortEntity entity,CheckEnum.DeviceCheckMode deviceCheckMode)
         {            
             try
             {
@@ -55,7 +56,7 @@ namespace ComTestApp.Common
                 sb.Append(drawerCode);
                 var code = entity.HardType.Equals("B2") ? Convert.ToInt32(portName) : 22 - Convert.ToInt32(portName);
                 sb.Append(code.ToString().Length == 1 ? "0" + code : code.ToString());
-                return ReadCommByUkeyAdd(sb.ToString().Trim(), entity);
+                return ReadCommByUkeyAdd(sb.ToString().Trim(), entity, deviceCheckMode);
             }
             catch (Exception ex)
             {
@@ -67,7 +68,7 @@ namespace ComTestApp.Common
             }
         }
 
-        public bool ReadCommByUkeyAdd(string ukeyadd, UsbPortEntity pe)
+        public bool ReadCommByUkeyAdd(string ukeyadd, UsbPortEntity pe,CheckEnum.DeviceCheckMode deviceCheckMode)
         {
             try
             {
@@ -124,7 +125,17 @@ namespace ComTestApp.Common
                         //Console.WriteLine("begin:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff"));
                         Thread.Sleep(waitingNum);
                         //Console.WriteLine("end:" + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss fff"));
-                        IsSuc = IsHaveDrive(ukeyadd);
+                        switch (deviceCheckMode)
+                        {
+                            case CheckEnum.DeviceCheckMode.Drive:
+                                IsSuc = IsHaveDrive(ukeyadd);
+                                break;
+                            case CheckEnum.DeviceCheckMode.ShCa:
+                                IsSuc = IsHaveShCa(ukeyadd);
+                                break;
+                            default:
+                                break;
+                        }                                               
                     }
                     //添加事件注册
                     sp.DataReceived += Sp_DataReceived;
@@ -156,6 +167,29 @@ namespace ComTestApp.Common
                 return false;
             }
             
+        }
+
+        private bool IsHaveShCa(string ukeyadd)
+        {
+            Thread.Sleep(waitingNum);
+            bool IsExists = false;
+            var caName = "";
+            for (int i = 0; i < 8; i++)
+            {
+                X509Store store = new X509Store((StoreName)(i + 1), StoreLocation.CurrentUser);
+                store.Open(OpenFlags.ReadOnly);
+                foreach (var item in store.Certificates)
+                {
+                    if (item.GetName().Contains("测试全力"))
+                    {
+                        IsExists = true;
+                        caName = item.GetName();
+                        break;
+                    }
+                }
+            }
+            LogHelper.ToLog(String.Format("指令{0}加载上海CA{1}！", ukeyadd,IsExists ? caName + "成功":"失败"));
+            return IsExists;
         }
 
         private  void Sp_DataReceived(object sender, SerialDataReceivedEventArgs e)

@@ -21,6 +21,10 @@ namespace ComTestApp.Entitys
         public int checkNumIndex { get; set; }
         [CommonEnitityMapping(ColumnName = "checkModel")]
         public int checkModelIndex { get; set; }
+
+        [CommonEnitityMapping(ColumnName = "deviceCheckModeIndex")]
+        public int deviceCheckModeIndex { get; set; }
+
         [CommonEnitityMapping(ColumnName = "waitNum")]
         public decimal waitNum { get; set; }
     }
