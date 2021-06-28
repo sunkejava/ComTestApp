@@ -56,7 +56,7 @@ namespace ComTestApp.Common
                 sb.Append(drawerCode);
                 var code = entity.HardType.Equals("B2") ? Convert.ToInt32(portName) : 22 - Convert.ToInt32(portName);
                 sb.Append(code.ToString().Length == 1 ? "0" + code : code.ToString());
-                return ReadCommByUkeyAdd(sb.ToString().Trim(), entity, deviceCheckMode);
+                return ReadCommByUkeyAddAsync(sb.ToString().Trim(), entity, deviceCheckMode);
             }
             catch (Exception ex)
             {
@@ -68,7 +68,7 @@ namespace ComTestApp.Common
             }
         }
 
-        public bool ReadCommByUkeyAdd(string ukeyadd, UsbPortEntity pe,CheckEnum.DeviceCheckMode deviceCheckMode)
+        public bool ReadCommByUkeyAddAsync(string ukeyadd, UsbPortEntity pe,CheckEnum.DeviceCheckMode deviceCheckMode)
         {
             try
             {
@@ -131,7 +131,7 @@ namespace ComTestApp.Common
                                 IsSuc = IsHaveDrive(ukeyadd);
                                 break;
                             case CheckEnum.DeviceCheckMode.ShCa:
-                                IsSuc = IsHaveShCa(ukeyadd);
+                                IsSuc = IsReadCaName(ukeyadd);//IsHaveShCa(ukeyadd);
                                 break;
                             default:
                                 break;
@@ -169,28 +169,66 @@ namespace ComTestApp.Common
             
         }
 
-        private bool IsHaveShCa(string ukeyadd)
+        private bool IsReadCaName(string ukeyadd)
         {
-            Thread.Sleep(waitingNum);
             bool IsExists = false;
-            var caName = "";
-            for (int i = 0; i < 8; i++)
+            Thread.Sleep(200);
+            var baseAddress = ECHelper.GetBaseAddress("UniClient");
+            var c1 = ECHelper.ReadMemoryValue(baseAddress + 0x00493D64, "UniClient");
+            var c2 = ECHelper.ReadMemoryValue(c1 + 0x8, "UniClient");
+            var c3 = ECHelper.ReadMemoryValue(c2 + 0x0, "UniClient");
+            var c4 = ECHelper.ReadMemoryValue(c3 + 0x28, "UniClient");
+            var c5 = ECHelper.ReadMemoryValue(c4 + 0xF8, "UniClient");//0x1EC
+            var c6 = ECHelper.ReadMemoryValue(c5 + 0x280, "UniClient", 50);
+            if (c6.IsEmpty())
             {
-                X509Store store = new X509Store((StoreName)(i + 1), StoreLocation.CurrentUser);
-                store.Open(OpenFlags.ReadOnly);
-                foreach (var item in store.Certificates)
-                {
-                    if (item.GetName().Contains("测试全力"))
-                    {
-                        IsExists = true;
-                        caName = item.GetName();
-                        break;
-                    }
-                }
+                Thread.Sleep(200);
+                c6 = GetCaName();
             }
-            LogHelper.ToLog(String.Format("指令{0}加载上海CA{1}！", ukeyadd,IsExists ? caName + "成功":"失败"));
+            c6 = c6.Contains("删除") ? "" : c6;
+            if(c6.Contains("测试全力"))
+            {
+                IsExists = true;             
+            }
+            Thread.Sleep(200);
+            LogHelper.ToLog(String.Format("指令{0}加载上海CA{1}！", ukeyadd, IsExists ? c6 + "成功" : "失败"));
             return IsExists;
         }
+
+        private string GetCaName()
+        {
+            var baseAddress = ECHelper.GetBaseAddress("UniClient");
+            var c1 = ECHelper.ReadMemoryValue(baseAddress + 0x00493D64, "UniClient");
+            var c2 = ECHelper.ReadMemoryValue(c1 + 0x8, "UniClient");
+            var c3 = ECHelper.ReadMemoryValue(c2 + 0x0, "UniClient");
+            var c4 = ECHelper.ReadMemoryValue(c3 + 0x28, "UniClient");
+            var c5 = ECHelper.ReadMemoryValue(c4 + 0x1EC, "UniClient");//0xF8
+            var c6 = ECHelper.ReadMemoryValue(c5 + 0x280, "UniClient", 50);
+            return c6;
+        }
+
+        //private bool IsHaveShCa(string ukeyadd)
+        //{
+        //    Thread.Sleep(waitingNum);
+        //    bool IsExists = false;
+        //    var caName = "";
+        //    for (int i = 0; i < 8; i++)
+        //    {
+        //        X509Store store = new X509Store((StoreName)(i + 1), StoreLocation.CurrentUser);
+        //        store.Open(OpenFlags.ReadOnly);
+        //        foreach (var item in store.Certificates)
+        //        {
+        //            if (item.GetName().Contains("测试全力"))
+        //            {
+        //                IsExists = true;
+        //                caName = item.GetName();
+        //                break;
+        //            }
+        //        }
+        //    }
+        //    LogHelper.ToLog(String.Format("指令{0}加载上海CA{1}！", ukeyadd,IsExists ? caName + "成功":"失败"));
+        //    return IsExists;
+        //}
 
         private  void Sp_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {

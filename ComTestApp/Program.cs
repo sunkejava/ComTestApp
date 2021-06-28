@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ComTestApp.Common;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -17,7 +18,7 @@ namespace ComTestApp
         /// </summary>
         [STAThread]
         static void Main()
-        {
+        {            
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new FormMain());

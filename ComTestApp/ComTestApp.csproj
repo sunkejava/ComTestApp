@@ -67,6 +67,7 @@
     <Compile Include="Common\ComPort.cs" />
     <Compile Include="Common\ControlUiHelp.cs" />
     <Compile Include="Common\DesktopWinAPI.cs" />
+    <Compile Include="Common\ECHelper.cs" />
     <Compile Include="Common\ExtensionHelp.cs" />
     <Compile Include="Common\RenderHelper.cs" />
     <Compile Include="Common\StaticCommon.cs" />

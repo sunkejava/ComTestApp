@@ -491,9 +491,9 @@ namespace ComTestApp
             portEntity.BoxId = "00";
             portEntity.PortId = "00";
             portEntity.CardId = "00";
-            var IsSuc = comport.ReadCommByUkeyAdd("000000", portEntity,deviceCheckMode);
+            var IsSuc = comport.ReadCommByUkeyAddAsync("000000", portEntity,deviceCheckMode);
             LogHelper.ToLog($"复位键000000发送:" + (IsSuc ? "成功" : "失败"));
-            IsSuc = comport.ReadCommByUkeyAdd("FFFFFF", portEntity, deviceCheckMode);
+            IsSuc = comport.ReadCommByUkeyAddAsync("FFFFFF", portEntity, deviceCheckMode);
             LogHelper.ToLog($"复位键FFFFFF发送:" + (IsSuc ? "成功" : "失败"));
         }
 
